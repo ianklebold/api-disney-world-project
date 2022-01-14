@@ -1,11 +1,16 @@
 package com.challenge.disneyworld.controller;
 
 import com.challenge.disneyworld.service.CharacterService;
+import com.challenge.disneyworld.utils.models.ModelCharacter;
+
+import java.util.ArrayList;
+
 import com.challenge.disneyworld.entity.Character;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,4 +28,9 @@ public class CharacterController {
         return new ResponseEntity<>(characterService.createCharacter(character),
                                     HttpStatus.CREATED);
     } 
+
+    @GetMapping
+    public ArrayList<ModelCharacter> getCharacter(){
+        return characterService.getCharacters();
+    }
 }
