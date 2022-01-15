@@ -1,0 +1,35 @@
+[33mcommit 4a5b95aaabe12352cff8a18e57172de37637351d[m[33m ([m[1;36mHEAD -> [m[1;32mCharacters[m[33m)[m
+Author: ianklebold <ianstgo@gmail.com>
+Date:   Fri Jan 14 18:18:02 2022 -0300
+
+    000- Characters - Post Character is ready
+
+[33mcommit addd23f278e80c405f5d7717a76def2b0c883893[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: ianklebold <ianstgo@gmail.com>
+Date:   Fri Jan 14 17:32:30 2022 -0300
+
+    Fix in Character Repository
+
+[33mcommit 3683db6e549df44180fba789884aa24fd7c90d85[m
+Author: ianklebold <ianstgo@gmail.com>
+Date:   Fri Jan 14 17:24:35 2022 -0300
+
+    Repositories ready
+
+[33mcommit 2127c15289a2471ad19594f6aabf803fbf3ebd86[m
+Author: ianklebold <ianstgo@gmail.com>
+Date:   Fri Jan 14 17:16:30 2022 -0300
+
+    Character Service and Appearance Service is ready
+
+[33mcommit ebfa8ce3be86cdda2530c224dc9b84c26f8a21df[m
+Author: ianklebold <ianstgo@gmail.com>
+Date:   Fri Jan 14 17:12:49 2022 -0300
+
+    Character Controller and Appearance Controller is ready
+
+[33mcommit 2a13507a3560242323436dc6593b710d34e97e09[m
+Author: ianklebold <ianstgo@gmail.com>
+Date:   Fri Jan 14 16:46:10 2022 -0300
+
+    Entities and models for the project is ready
