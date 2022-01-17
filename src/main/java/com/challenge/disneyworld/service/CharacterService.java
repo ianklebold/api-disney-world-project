@@ -2,6 +2,7 @@ package com.challenge.disneyworld.service;
 
 import com.challenge.disneyworld.repository.CharacterRepository;
 import com.challenge.disneyworld.utils.models.ModelCharacter;
+import com.challenge.disneyworld.utils.models.ModelListCharacter;
 import com.challenge.disneyworld.utils.models.builders.BuilderCharacter;
 
 import java.time.LocalDate;
@@ -57,7 +58,7 @@ public class CharacterService {
         Optional<Character> character = characterRepository.findById(id);
  
         if(character.isPresent()){
-             BuilderCharacter builder = new BuilderCharacter();
+            BuilderCharacter builder = new BuilderCharacter();
  
             ModelCharacter characterRequest;
                 
@@ -80,11 +81,29 @@ public class CharacterService {
         Period age = Period.between(character.getBorn_date(), LocalDate.now());
         return age.getYears();
     }
-/*
-    public Optional<Character> getCharacterById(Long id){
-        return characterRepository.findById(id);
+
+    public ResponseEntity<?> getCharacter(){
+        ArrayList<Character> listCharacters = (ArrayList<Character>) characterRepository.findAll();
+        
+        if(listCharacters.size() > 0){
+            BuilderCharacter builder = new BuilderCharacter();
+            
+            ArrayList<ModelListCharacter> requestCharacters = new ArrayList<ModelListCharacter>();
+
+            for (Character c : listCharacters) {
+                    
+                requestCharacters.add(
+                    builder.setName(c.getName())
+                    .builderListCharacter()
+                );
+            } 
+            return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
+        }else{
+            return new ResponseEntity<>("No exists Characters",
+            HttpStatus.NOT_FOUND);
+        }
     }
-*/
+
     public ResponseEntity<?> updateCharacter(Character character,Long id){
         String name = character.getName();
         Optional<Character> objectControlName = characterRepository.findByName(name);

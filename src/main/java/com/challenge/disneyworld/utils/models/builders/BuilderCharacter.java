@@ -1,15 +1,13 @@
 package com.challenge.disneyworld.utils.models.builders;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 
 import com.challenge.disneyworld.entity.Appearance;
-import com.challenge.disneyworld.entity.Character;
-import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.utils.models.ModelAppearance;
 import com.challenge.disneyworld.utils.models.ModelCharacter;
+import com.challenge.disneyworld.utils.models.ModelListCharacter;
 
 public class BuilderCharacter implements IBuilder{
     private Long id;
@@ -62,6 +60,16 @@ public class BuilderCharacter implements IBuilder{
         character.setName(this.name);
         character.setHistory(this.history);
         character.setAppearances(this.appearances);
+        //Falta la imagen e imagenes
+
+        return character;
+    }
+
+    @Override
+    public ModelListCharacter builderListCharacter(){
+        ModelListCharacter character = new ModelListCharacter();
+        character.setName(this.name);
+        //Falta la imagen de perfil
 
         return character;
     }

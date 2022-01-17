@@ -1,9 +1,8 @@
 package com.challenge.disneyworld.controller;
 
 import com.challenge.disneyworld.service.CharacterService;
-import com.challenge.disneyworld.utils.models.ModelCharacter;
 
-import java.util.ArrayList;
+
 import com.challenge.disneyworld.entity.Character;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,11 @@ public class CharacterController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getCharacterById(@PathVariable(name = "id") Long id){
         return characterService.getCharacterById(id);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getCharacter(){
+        return characterService.getCharacter();
     }
 
     @PutMapping("/{id}")
