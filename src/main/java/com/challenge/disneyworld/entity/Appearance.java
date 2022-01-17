@@ -1,5 +1,6 @@
 package com.challenge.disneyworld.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class Appearance {
 
     @NotEmpty
     @Column(name = "creation_date", nullable = false, updatable = true)
-    private String creation_date;
+    private LocalDate creation_date;
 
     @NotEmpty
     @Min(value = 1)
@@ -76,7 +77,7 @@ public class Appearance {
 
     /*Constructors*/
 
-    public Appearance(Long id, @NotEmpty String title, @NotEmpty String creation_date,
+    public Appearance(Long id, @NotEmpty String title, @NotEmpty LocalDate creation_date,
             @NotEmpty @Min(1) @Max(5) int calification, @NotEmpty String history,
             @NotEmpty EnumTypeAppearance type, Genre genre) {
         this.id = id;
@@ -121,16 +122,16 @@ public class Appearance {
     }
 
     /**
-     * @return String return the creation_date
+     * @return LocalDate return the creation_date
      */
-    public String getCreation_date() {
+    public LocalDate getCreation_date() {
         return creation_date;
     }
 
     /**
      * @param creation_date the creation_date to set
      */
-    public void setCreation_date(String creation_date) {
+    public void setCreation_date(LocalDate creation_date) {
         this.creation_date = creation_date;
     }
 
