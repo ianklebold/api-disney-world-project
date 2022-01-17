@@ -161,6 +161,18 @@ public class CharacterService {
                                     HttpStatus.OK);
         }   
     }
+
+    public ResponseEntity<?> deleteCharacter(Long id){
+        Optional<Character> characterFound = characterRepository.findById(id);
+        if(characterFound.isPresent()){
+           characterRepository.delete(characterFound.get());
+           return new ResponseEntity<>("Succesfully deleted",
+           HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Character not found",
+            HttpStatus.NOT_FOUND);
+        }
+    }
   
 
 }

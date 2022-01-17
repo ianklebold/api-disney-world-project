@@ -4,13 +4,12 @@ import com.challenge.disneyworld.service.CharacterService;
 import com.challenge.disneyworld.utils.models.ModelCharacter;
 
 import java.util.ArrayList;
-import java.util.Optional;
-
 import com.challenge.disneyworld.entity.Character;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +41,11 @@ public class CharacterController {
                                              @PathVariable(name = "id") Long id){
 
         return characterService.updateCharacter(character,id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCharacter(@PathVariable(name = "id") Long id){
+        return characterService.deleteCharacter(id);
     }
 
     
