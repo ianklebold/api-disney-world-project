@@ -31,9 +31,9 @@ public class CharacterController {
                                     HttpStatus.CREATED);
     } 
 
-    @GetMapping
-    public ArrayList<ModelCharacter> getCharacter(){
-        return characterService.getCharacters();
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCharacterById(@PathVariable(name = "id") Long id){
+        return characterService.getCharacterById(id);
     }
 
     @PutMapping("/{id}")

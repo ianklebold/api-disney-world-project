@@ -53,41 +53,38 @@ public class CharacterService {
         HttpStatus.OK);
     }
 
-    public ArrayList<ModelCharacter> getCharacters(){
-        ArrayList<Character> characters = (ArrayList<Character>) characterRepository.findAll();
+    public ResponseEntity<?> getCharacterById(Long id){
+        Optional<Character> character = characterRepository.findById(id);
  
-        if(characters.size() > 0){
+        if(character.isPresent()){
              BuilderCharacter builder = new BuilderCharacter();
  
-             ArrayList<ModelCharacter> charactersRequest = new ArrayList<ModelCharacter>();
- 
-                 for (Character c : characters) {
-                     charactersRequest.add(
-                         builder.setId(c.getId())
-                             .setAge(returnAge(c))
-                             .setName(c.getName())
-                             .setHistory(c.getHistory())
-                             .setAppearances(c.getAppearances())
-                             .builder()
-                     );
-                 }
- 
-                 return charactersRequest;
+            ModelCharacter characterRequest;
+                
+            characterRequest = builder.setId(character.get().getId())
+                        .setAge(returnAge(character.get()))
+                        .setName(character.get().getName())
+                        .setHistory(character.get().getHistory())
+                        .setAppearances(character.get().getAppearances())
+                        .builder();
+            
+            return new ResponseEntity<>(characterRequest, HttpStatus.OK);
          }else{
-                 return null;
+            return new ResponseEntity<>("Character not found",
+            HttpStatus.NOT_FOUND);
          }
  
      }
  
-     public int returnAge(Character character){
+    public int returnAge(Character character){
         Period age = Period.between(character.getBorn_date(), LocalDate.now());
         return age.getYears();
     }
-
+/*
     public Optional<Character> getCharacterById(Long id){
         return characterRepository.findById(id);
     }
-
+*/
     public ResponseEntity<?> updateCharacter(Character character,Long id){
         String name = character.getName();
         Optional<Character> objectControlName = characterRepository.findByName(name);
