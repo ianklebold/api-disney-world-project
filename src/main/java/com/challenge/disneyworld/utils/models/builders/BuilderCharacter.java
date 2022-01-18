@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.utils.models.ModelAppearance;
-import com.challenge.disneyworld.utils.models.ModelCharacter;
+import com.challenge.disneyworld.utils.models.ModelDetailCharacter;
 import com.challenge.disneyworld.utils.models.ModelListCharacter;
 
 public class BuilderCharacter implements IBuilder{
@@ -53,8 +53,8 @@ public class BuilderCharacter implements IBuilder{
     }
 
     @Override
-    public ModelCharacter builder(){
-        ModelCharacter character = new ModelCharacter();
+    public ModelDetailCharacter builder(){
+        ModelDetailCharacter character = new ModelDetailCharacter();
         character.setId(this.id);
         character.setAge(this.age);
         character.setName(this.name);

@@ -6,8 +6,10 @@ import java.util.Optional;
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.repository.AppearanceRepository;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
+import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
 import com.challenge.disneyworld.utils.models.builders.BuilderAppearance;
+import com.challenge.disneyworld.utils.models.builders.BuilderDetailAppearances;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,10 @@ public class AppearanceService {
     private final ResponseEntity<?> responseTitleMovieSerieNotUnique = 
     new ResponseEntity<>("Exists Movie/Serie with the same name",
     HttpStatus.NOT_ACCEPTABLE);
+
+    private final ResponseEntity<?> responseAppearanceNoExists = 
+    new ResponseEntity<>("The Movie/Serie not exists",
+    HttpStatus.NOT_FOUND);
 
 
     public ResponseEntity<?> createAppearance(Appearance appearance){
@@ -48,6 +54,27 @@ public class AppearanceService {
         ArrayList<Appearance> listSeries = 
         appearanceRepository.findAllByType(EnumTypeAppearance.SERIE);
         return new ResponseEntity<>(constructorSeriesOrMovies(listSeries), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceById(Long id){
+        Optional<Appearance> appearances = appearanceRepository.findById(id);
+        ModelDetailAppearance requestAppearance = new ModelDetailAppearance();
+        
+        BuilderDetailAppearances builder = new BuilderDetailAppearances();
+
+        if(appearances.isPresent()){
+        requestAppearance = builder.setId(appearances.get().getId())
+                                   .setTitle(appearances.get().getTitle())
+                                   .setHistory(appearances.get().getHistory())
+                                   .setCalification(appearances.get().getCalification())
+                                   .setType(appearances.get().getType())
+                                   .setCreationDate(appearances.get().getCreation_date())
+                                   .setListCharacters(appearances.get().getCharacters())
+                                   .modelDetailAppearance();
+        return new ResponseEntity<>(requestAppearance, HttpStatus.OK);
+        }else{
+        return responseAppearanceNoExists;
+        }
     }
 
     private ArrayList<ModelListAppearance> constructorSeriesOrMovies(ArrayList<Appearance> lAppearances){
@@ -80,6 +107,8 @@ public class AppearanceService {
            appearance.getType() == null
            )? true : false;
     }
+
+
 
 
 }

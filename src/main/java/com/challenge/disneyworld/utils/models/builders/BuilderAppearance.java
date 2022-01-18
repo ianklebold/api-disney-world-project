@@ -2,6 +2,7 @@ package com.challenge.disneyworld.utils.models.builders;
 
 import java.time.LocalDate;
 
+import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
 
 public class BuilderAppearance implements IAppearanceBuilder{
@@ -33,6 +34,12 @@ public class BuilderAppearance implements IAppearanceBuilder{
         modelListAppearance.setCreation_date(this.creation_date);
     //  modelListAppearance.setImage(this.urlImagen);
         return modelListAppearance;
+    }
+
+    @Override
+    public ModelDetailAppearance modelDetailAppearance() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

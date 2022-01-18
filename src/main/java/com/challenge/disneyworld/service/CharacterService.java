@@ -1,7 +1,7 @@
 package com.challenge.disneyworld.service;
 
 import com.challenge.disneyworld.repository.CharacterRepository;
-import com.challenge.disneyworld.utils.models.ModelCharacter;
+import com.challenge.disneyworld.utils.models.ModelDetailCharacter;
 import com.challenge.disneyworld.utils.models.ModelListCharacter;
 import com.challenge.disneyworld.utils.models.builders.BuilderCharacter;
 
@@ -60,7 +60,7 @@ public class CharacterService {
         if(character.isPresent()){
             BuilderCharacter builder = new BuilderCharacter();
  
-            ModelCharacter characterRequest;
+            ModelDetailCharacter characterRequest;
                 
             characterRequest = builder.setId(character.get().getId())
                         .setAge(returnAge(character.get()))
