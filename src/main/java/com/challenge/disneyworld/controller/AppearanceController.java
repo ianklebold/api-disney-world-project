@@ -33,6 +33,11 @@ public class AppearanceController {
         return appearanceService.getMovies();
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getall(){
+        return appearanceService.getall();
+    }
+
     @GetMapping("/series")
     public ResponseEntity<?> getSeries(){
         return appearanceService.getSeries();

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.challenge.disneyworld.entity.Appearance;
+import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.repository.AppearanceRepository;
+import com.challenge.disneyworld.repository.CharacterRepository;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
@@ -22,6 +24,9 @@ public class AppearanceService {
     @Autowired
     AppearanceRepository appearanceRepository;
 
+    @Autowired
+    CharacterRepository characterRepository;
+
     private final ResponseEntity<?> responseFieldsEmpty = 
     new ResponseEntity<>("The fields Title, Creation date, History or type can't be empty",
     HttpStatus.NOT_ACCEPTABLE);
@@ -34,20 +39,57 @@ public class AppearanceService {
     new ResponseEntity<>("The Movie/Serie not exists",
     HttpStatus.NOT_FOUND);
 
+    private final ResponseEntity<?> responseCharacterNoExists = 
+    new ResponseEntity<>("One or more characters no exists",
+    HttpStatus.NOT_ACCEPTABLE);
 
     public ResponseEntity<?> createAppearance(Appearance appearance){
         if(controlEmptyFields(appearance)) return responseFieldsEmpty;
         
         if(controlTitleUnique(appearance)) return responseTitleMovieSerieNotUnique;
+
+        if(controlCharacters(appearance)) return responseCharacterNoExists;
+
         appearanceRepository.save(appearance);
+
+
+
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
     }
+
+    private Boolean controlCharacters(Appearance appearance){
+        ArrayList<Character> listaCharacters = new ArrayList<Character>();
+        for (Character character : appearance.getCharacters()) {
+            Optional<Character> characterRequest = 
+            characterRepository.findById(character.getId());
+            if(characterRequest.isPresent()){
+                listaCharacters.add(characterRequest.get());
+                
+            }else{
+                listaCharacters.add(null);
+            }
+        }
+        if(listaCharacters.contains(null)){
+            return true;
+        }else{
+            appearance.setCharacters(listaCharacters);
+            return false;
+        }
+    } 
 
     public ResponseEntity<?> getMovies(){
         ArrayList<Appearance> listMovies = 
         appearanceRepository.findAllByType(EnumTypeAppearance.MOVIE);
         return (listMovies.size() > 0)?new ResponseEntity<>(constructorSeriesOrMovies(listMovies), HttpStatus.OK):
         new ResponseEntity<>("No exists movies", HttpStatus.NOT_FOUND);
+    }
+
+    //TODO DELETE THIS METHOD
+    public ResponseEntity<?> getall(){
+        ArrayList<Appearance> listMovies = 
+        (ArrayList<Appearance>) appearanceRepository.findAll();
+        return (listMovies.size() > 0)?new ResponseEntity<>(listMovies, HttpStatus.OK):
+        new ResponseEntity<>("No exists appearance", HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<?> getSeries(){

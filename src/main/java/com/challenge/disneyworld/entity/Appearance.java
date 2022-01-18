@@ -217,6 +217,9 @@ public class Appearance {
      */
     public void setCharacters(List<Character> characters) {
         this.characters = characters;
+        for (Character character : characters) {
+            character.getAppearances().add(this);
+        }
     }
 
     /**

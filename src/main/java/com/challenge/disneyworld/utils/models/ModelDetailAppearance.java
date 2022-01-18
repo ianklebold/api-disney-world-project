@@ -130,7 +130,7 @@ public class ModelDetailAppearance {
      * @param listCharacters the listCharacters to set
      */
     public void setListCharacters(ArrayList<ModelCharacter> listCharacters) {
-
+        this.listCharacters = listCharacters;
     }
 
 }
