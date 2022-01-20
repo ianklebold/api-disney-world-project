@@ -3,10 +3,13 @@ package com.challenge.disneyworld.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
+import com.challenge.disneyworld.entity.Genre;
 import com.challenge.disneyworld.repository.AppearanceRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
+import com.challenge.disneyworld.repository.GenreRepository;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
@@ -27,6 +30,9 @@ public class AppearanceService {
     @Autowired
     CharacterRepository characterRepository;
 
+    @Autowired
+    GenreRepository genreRepository;
+
     private final ResponseEntity<?> responseFieldsEmpty = 
     new ResponseEntity<>("The fields Title, Creation date, History or type can't be empty",
     HttpStatus.NOT_ACCEPTABLE);
@@ -43,6 +49,18 @@ public class AppearanceService {
     new ResponseEntity<>("One or more characters no exists",
     HttpStatus.NOT_ACCEPTABLE);
 
+    private final ResponseEntity<?> responseCalificationNotAceptable = 
+    new ResponseEntity<>("The range of the calification is 1 to 5",
+    HttpStatus.NOT_ACCEPTABLE);
+
+    private final ResponseEntity<?> responseDateNotAceptable = 
+    new ResponseEntity<>("The format of date is incorrect. Format : YYYY-MM-dd",
+    HttpStatus.NOT_ACCEPTABLE);
+
+    private final ResponseEntity<?> responseGenreNoExists = 
+    new ResponseEntity<>("The genre not exists",
+    HttpStatus.NOT_FOUND);
+
     public ResponseEntity<?> createAppearance(Appearance appearance){
         if(controlEmptyFields(appearance)) return responseFieldsEmpty;
         
@@ -50,11 +68,88 @@ public class AppearanceService {
 
         if(controlCharacters(appearance)) return responseCharacterNoExists;
 
+        if(controlGenre(appearance)) return responseGenreNoExists;
+
         appearanceRepository.save(appearance);
 
 
 
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> updateAppearance(Appearance appearance, Long id){
+        Appearance requestAppearance = appearanceRepository.findById(id).get();
+        if(requestAppearance != null){
+            appearance.setId(id);
+            if(appearance.getTitle() != null){
+                if(controlTitleUnique(appearance)) return responseTitleMovieSerieNotUnique;
+            }else{
+                appearance.setTitle(requestAppearance.getTitle());
+            }
+
+            if(appearance.getCreation_date() != null){
+                if(!Helpers.controlDate(appearance.getCreation_date().toString())) 
+                return responseDateNotAceptable;
+            }else{
+                appearance.setCreation_date(requestAppearance.getCreation_date());
+            }
+
+            controlCalification(appearance,requestAppearance.getCalification());
+
+
+            if(appearance.getHistory() == null || appearance.getHistory().trim().isEmpty()){
+                appearance.setHistory(requestAppearance.getHistory());
+            }
+
+            /*
+            TODO CONTROL IMAGENES
+            */
+            if(appearance.getType() == null){
+                appearance.setType(requestAppearance.getType());
+            }
+            
+            if(appearance.getGenre() == null){
+                appearance.setGenre(requestAppearance.getGenre());
+            }else{
+                if(controlGenre(appearance)) return responseGenreNoExists;
+            }
+
+            if(controlCharacters(appearance)) return responseCharacterNoExists;
+            appearanceRepository.save(appearance);
+            return new ResponseEntity<>("Succesfully updated", HttpStatus.OK);
+        }else{
+            return responseAppearanceNoExists;
+        }
+
+
+    }
+
+    public ResponseEntity<?> deleteAppearance(Long id){
+        Optional<Appearance> appearanceRequest = appearanceRepository.findById(id);
+
+        if(appearanceRequest.isPresent()){
+            appearanceRepository.delete(appearanceRequest.get());
+        }else{
+            return responseAppearanceNoExists;
+        }
+        return new ResponseEntity<>("Succesfully deleted", HttpStatus.OK); 
+    }
+
+    private Boolean controlGenre(Appearance appearance){
+        Optional<Genre> genere = genreRepository.findById(appearance.getGenre().getId());
+        if(genere.isPresent()){
+            appearance.setGenre(genere.get());
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    private void controlCalification(Appearance appearance, int califRequest){
+
+        if(appearance.getCalification() < 1 || appearance.getCalification() > 5){
+            appearance.setCalification(califRequest);
+        }
     }
 
     private Boolean controlCharacters(Appearance appearance){

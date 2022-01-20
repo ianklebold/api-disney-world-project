@@ -189,6 +189,9 @@ public class Appearance {
      */
     public void setGenre(Genre genre) {
         this.genre = genre;
+        if(genre != null){
+            genre.getAppearances().add(this);
+        }
     }
 
     /**
@@ -217,8 +220,14 @@ public class Appearance {
      */
     public void setCharacters(List<Character> characters) {
         this.characters = characters;
-        for (Character character : characters) {
-            character.getAppearances().add(this);
+        if(characters != null){
+            for (Character character : characters) {
+                if(character.getAppearances().contains(this)){
+                    //Evito añadir dos veces el mismo objeto cuando actualizamos.
+                    character.getAppearances().remove(this);
+                }
+                character.getAppearances().add(this);
+            }
         }
     }
 

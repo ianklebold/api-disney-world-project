@@ -75,16 +75,30 @@ public class Genre {
     }
 
     /**
+     * @return ProfileImage return the profileimage
+     */
+    public ProfileImage getProfileimage() {
+        return profileimage;
+    }
+
+    /**
+     * @param profileimage the profileimage to set
+     */
+    public void setProfileimage(ProfileImage profileimage) {
+        this.profileimage = profileimage;
+    }
+
+    /**
      * @return List<Appearance> return the appearances
      */
-    public List<Appearance> getGenre() {
+    public List<Appearance> getAppearances() {
         return appearances;
     }
 
     /**
      * @param appearances the appearances to set
      */
-    public void setGenre(List<Appearance> appearances) {
+    public void setAppearances(List<Appearance> appearances) {
         this.appearances = appearances;
     }
 
