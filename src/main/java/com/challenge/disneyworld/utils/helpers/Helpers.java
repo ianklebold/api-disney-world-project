@@ -22,4 +22,6 @@ public class Helpers {
         return NAME_PATTERN.matcher(name.trim().replaceAll("\\s+","")).matches();
     }
 
+    
+
 }

@@ -1,6 +1,8 @@
 package com.challenge.disneyworld.service;
 
+import com.challenge.disneyworld.repository.AppearanceRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
+import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.utils.models.ModelDetailCharacter;
 import com.challenge.disneyworld.utils.models.ModelListCharacter;
 import com.challenge.disneyworld.utils.models.builders.BuilderCharacter;
@@ -10,6 +12,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,39 +22,83 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CharacterService {
-    @Autowired
+    
     CharacterRepository characterRepository;
+    AppearanceRepository appearanceRepository;
+    
 
+    @Autowired
+    public CharacterService(CharacterRepository characterRepository, AppearanceRepository appearanceRepository){
+        this.characterRepository = characterRepository;
+        this.appearanceRepository = appearanceRepository;
+    }
+
+    private final ResponseEntity<?> responseFieldsEmpty = 
+    new ResponseEntity<>("The fields Title, Creation date, History or type can't be empty",
+    HttpStatus.NOT_ACCEPTABLE);
+
+    private final ResponseEntity<?> responseAppearanceNoExists = 
+    new ResponseEntity<>("The Movie/Serie not exists",
+    HttpStatus.NOT_FOUND);
 
     public ResponseEntity<?> createCharacter(Character character){
+
+        if(controlEmptyFields(character)) return responseFieldsEmpty;
+
         Optional<Character> objectControlName = 
         characterRepository.findByName(character.getName());
-        
-        if(character.getName() == null ||
-           character.getName().trim().isEmpty()
-        ){
-            return new ResponseEntity<>("The name of the character can't be empty",
-            HttpStatus.NOT_ACCEPTABLE);
-        }
 
         if(objectControlName.isPresent()){
             return new ResponseEntity<>("Exists character with the same name",
             HttpStatus.NOT_ACCEPTABLE);
         }
 
-        if(character.getBorn_date() == null){
-            return new ResponseEntity<>("The birth day of the character can't be empty",
-            HttpStatus.NOT_ACCEPTABLE);
-        }
-        if(character.getHistory() == null){
-            return new ResponseEntity<>("The history of the character can't be empty",
-            HttpStatus.NOT_ACCEPTABLE);
-        }
+        if(!Helpers.controlRegexName(character.getName()))
+        return new ResponseEntity<>("The name of the character is invalid",
+        HttpStatus.NOT_ACCEPTABLE);
+
+        if(controlAppearance(character)) return responseAppearanceNoExists;
 
         characterRepository.save(character);
 
         return new ResponseEntity<>("Succesfully created",
         HttpStatus.OK);
+    }
+
+    private Boolean controlAppearance(Character character){
+        if(character.getAppearances().size()>0){
+            ArrayList<Appearance> listAppearances = new ArrayList<Appearance>();
+            for (Appearance appearance : character.getAppearances()) {
+
+                Optional<Appearance> appearanceRequest = 
+                appearanceRepository.findById(appearance.getId());
+
+                if(appearanceRequest.isPresent()){
+                    listAppearances.add(appearanceRequest.get());
+                    
+                }else{
+                    listAppearances.add(null);
+                }
+            }
+            if(listAppearances.contains(null)){
+                return true;
+            }else{
+                character.setAppearances(listAppearances);
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
+    private Boolean controlEmptyFields(Character character){
+        return (
+            character.getName() == null || 
+            character.getBorn_date() == null ||
+            character.getHistory() == null || 
+            character.getName().replaceAll("\\s+","").isEmpty() ||
+            character.getHistory().replaceAll("\\s+","").isEmpty()
+        )? true : false;
     }
 
     public ResponseEntity<?> getCharacterById(Long id){
