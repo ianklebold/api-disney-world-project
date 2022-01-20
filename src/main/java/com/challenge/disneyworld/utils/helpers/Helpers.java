@@ -15,6 +15,7 @@ public class Helpers {
             return false;
         }
     }
+    
 
     public static Boolean controlRegexName(String name){
         Pattern NAME_PATTERN = Pattern.compile("[[a-z]|[A-Z]]+");

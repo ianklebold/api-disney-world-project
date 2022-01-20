@@ -24,14 +24,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppearanceService {
 
-    @Autowired
     AppearanceRepository appearanceRepository;
-
-    @Autowired
     CharacterRepository characterRepository;
+    GenreRepository genreRepository;
 
     @Autowired
-    GenreRepository genreRepository;
+    public AppearanceService(AppearanceRepository appearanceRepository,
+                             CharacterRepository characterRepository,
+                             GenreRepository genreRepository){
+
+        this.appearanceRepository = appearanceRepository;
+        this.characterRepository = characterRepository;
+        this.genreRepository = genreRepository;
+    }
 
     private final ResponseEntity<?> responseFieldsEmpty = 
     new ResponseEntity<>("The fields Title, Creation date, History or type can't be empty",
@@ -63,6 +68,9 @@ public class AppearanceService {
 
     public ResponseEntity<?> createAppearance(Appearance appearance){
         if(controlEmptyFields(appearance)) return responseFieldsEmpty;
+
+        if(!Helpers.controlDate(appearance.getCreation_date().toString())) 
+        return responseDateNotAceptable;
         
         if(controlTitleUnique(appearance)) return responseTitleMovieSerieNotUnique;
 
@@ -70,10 +78,10 @@ public class AppearanceService {
 
         if(controlGenre(appearance)) return responseGenreNoExists;
 
+
+        appearance.setHistory(appearance.getHistory().trim());
+        
         appearanceRepository.save(appearance);
-
-
-
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
     }
 
@@ -136,12 +144,16 @@ public class AppearanceService {
     }
 
     private Boolean controlGenre(Appearance appearance){
-        Optional<Genre> genere = genreRepository.findById(appearance.getGenre().getId());
-        if(genere.isPresent()){
-            appearance.setGenre(genere.get());
-            return false;
+        if(appearance.getGenre() != null){
+            Optional<Genre> genere = genreRepository.findById(appearance.getGenre().getId());
+            if(genere.isPresent()){
+                appearance.setGenre(genere.get());
+                return false;
+            }else{
+                return true;
+            }
         }else{
-            return true;
+            return false;
         }
     }
 
@@ -240,7 +252,7 @@ public class AppearanceService {
            appearance.getTitle() == null ||
            appearance.getTitle().trim().isEmpty() || 
            appearance.getCreation_date() == null || 
-           appearance.getHistory() == null ||
+           appearance.getHistory() == null || appearance.getHistory().trim().isEmpty() ||
            appearance.getType() == null
            )? true : false;
     }
