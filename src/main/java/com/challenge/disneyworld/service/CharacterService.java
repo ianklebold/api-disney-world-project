@@ -37,6 +37,14 @@ public class CharacterService {
     new ResponseEntity<>("The fields Title, Creation date, History or type can't be empty",
     HttpStatus.NOT_ACCEPTABLE);
 
+    private final ResponseEntity<?> dateBornNotChange = 
+    new ResponseEntity<>("The Creation date can't be change",
+    HttpStatus.NOT_ACCEPTABLE);
+ 
+    private final ResponseEntity<?> responseCharacterNoExists = 
+    new ResponseEntity<>("The Character not exists",
+    HttpStatus.NOT_FOUND);
+
     private final ResponseEntity<?> responseAppearanceNoExists = 
     new ResponseEntity<>("The Movie/Serie not exists",
     HttpStatus.NOT_FOUND);
@@ -65,31 +73,6 @@ public class CharacterService {
         HttpStatus.OK);
     }
 
-    private Boolean controlAppearance(Character character){
-        if(character.getAppearances().size()>0){
-            ArrayList<Appearance> listAppearances = new ArrayList<Appearance>();
-            for (Appearance appearance : character.getAppearances()) {
-
-                Optional<Appearance> appearanceRequest = 
-                appearanceRepository.findById(appearance.getId());
-
-                if(appearanceRequest.isPresent()){
-                    listAppearances.add(appearanceRequest.get());
-                    
-                }else{
-                    listAppearances.add(null);
-                }
-            }
-            if(listAppearances.contains(null)){
-                return true;
-            }else{
-                character.setAppearances(listAppearances);
-                return false;
-            }
-        }else{
-            return false;
-        }
-    }
 
     private Boolean controlEmptyFields(Character character){
         return (
@@ -152,88 +135,98 @@ public class CharacterService {
     }
 
     public ResponseEntity<?> updateCharacter(Character character,Long id){
-        String name = character.getName();
-        Optional<Character> objectControlName = characterRepository.findByName(name);
-    
-        if( objectControlName.isPresent()){
-            //Control nombre unico
-            return controlUniqueNameAndDate(character, objectControlName.get(), id);
-        }else{
-            return controlBodyCharacter(character,id);
-        }
-    
-    }
+        Optional<Character> requestCharacter = characterRepository.findById(id);
+        if(requestCharacter.isPresent()){
+            character.setId(requestCharacter.get().getId());
+            if(character.getName() != null){
+                String name = character.getName();
+                Optional<Character> objectControlName = characterRepository.findByName(name);
+                if(objectControlName.isPresent()){
+                    if(objectControlName.get().getId() != character.getId()){
+                        return new ResponseEntity<>("Exists character with the same name",
+                        HttpStatus.NOT_ACCEPTABLE);
+                    }
 
-    private ResponseEntity<?> controlUniqueNameAndDate(Character character,
-                                Character objectControlName,
-                                 Long id){
-        
-        if(objectControlName.getId() == id){
-            //Same id, same name is good
-            return controlBodyCharacter(character, id);
-        }else{
-            return new ResponseEntity<>("Exists character with the same name", 
-                                        HttpStatus.CONFLICT);
-        }
-    }
+                }
 
+                if(character.getName().replaceAll("\\s+","").isEmpty()){
+                    return new ResponseEntity<>("The field name can't be empty",
+                        HttpStatus.NOT_ACCEPTABLE);
+                }
 
-    private ResponseEntity<?> controlBodyCharacter(Character character, Long id){
-        Optional<Character> characterFound = characterRepository.findById(id);
-        LocalDate fecha = characterFound.get().getBorn_date();
-
-        if(characterFound.isPresent()){
-
-            if(character.getBorn_date() != null && 
-            fecha == character.getBorn_date()){
-                return new ResponseEntity<>("You can't update the birth date",
-                                        HttpStatus.CONFLICT);
             }else{
-                return updateTheCharacter(character,characterFound.get(),id);
+                character.setName(requestCharacter.get().getName());
             }
+
+            if(!Helpers.controlRegexName(character.getName()))
+            return new ResponseEntity<>("The name of the character is invalid",
+            HttpStatus.NOT_ACCEPTABLE);
+
+            if(character.getBorn_date() == null){
+                character.setBorn_date(requestCharacter.get().getBorn_date());
+            }else{
+                if(character.getBorn_date() != requestCharacter.get().getBorn_date()) 
+                return dateBornNotChange;
+            }
+
+            if(character.getHistory() == null) 
+            character.setHistory(requestCharacter.get().getHistory());
+
+            characterRepository.save(character);
+
+            return new ResponseEntity<>("Succesfully updated",
+            HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("Character not found",
-            HttpStatus.NOT_FOUND);
-        }  
-
-    }
-
-    private ResponseEntity<?> updateTheCharacter(Character character
-                                                ,Character characterFound, 
-                                                Long id){
-        Optional<Character> c = characterRepository.findById(id);
-        
-        character.setId(c.get().getId());
-        character.setBorn_date(c.get().getBorn_date());
-        
-        if(character.getHistory() == null){
-            character.setHistory(c.get().getHistory());
+            return responseCharacterNoExists;
         }
 
-        if(character.getName().trim().isEmpty() ||
-           character.getName() == null){
-           
-           character.setName(c.get().getName());
-
-           characterRepository.save(character);
-           return new ResponseEntity<>("Warning the name of the character can't be empty or null. The value of the name is take for default",
-                                    HttpStatus.ACCEPTED);
-        }else{
-            characterRepository.save(character);
-            return new ResponseEntity<>("Succesfully updated",
-                                    HttpStatus.OK);
-        }   
     }
+
+    private Boolean controlAppearance(Character character){
+        ArrayList<Appearance> listAppearances = new ArrayList<Appearance>();
+        for (Appearance appearance : character.getAppearances()) {
+
+            Optional<Appearance> appearanceRequest = 
+            appearanceRepository.findById(appearance.getId());
+
+            if(appearanceRequest.isPresent()){
+                listAppearances.add(appearanceRequest.get());
+                    
+            }else{
+                listAppearances.add(null);
+            }
+        }
+        if(listAppearances.contains(null)){
+            return true;
+        }else{
+            System.out.println(listAppearances);
+            character.setAppearances(listAppearances);
+            return false;
+        }
+        
+    }
+
 
     public ResponseEntity<?> deleteCharacter(Long id){
         Optional<Character> characterFound = characterRepository.findById(id);
         if(characterFound.isPresent()){
+
+            //Remove from list of appearances     
+            removeFromListAppearances(characterFound.get());
            characterRepository.delete(characterFound.get());
            return new ResponseEntity<>("Succesfully deleted",
            HttpStatus.OK);
         }else{
             return new ResponseEntity<>("Character not found",
             HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    private void removeFromListAppearances(Character characterRequest){
+        
+        for (Appearance element : characterRequest.getAppearances()) {
+            element.getCharacters().remove(characterRequest);    
         }
     }
   

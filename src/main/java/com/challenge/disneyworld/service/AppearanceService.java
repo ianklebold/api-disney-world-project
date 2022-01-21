@@ -136,12 +136,14 @@ public class AppearanceService {
         Optional<Appearance> appearanceRequest = appearanceRepository.findById(id);
 
         if(appearanceRequest.isPresent()){
+
             appearanceRepository.delete(appearanceRequest.get());
         }else{
             return responseAppearanceNoExists;
         }
         return new ResponseEntity<>("Succesfully deleted", HttpStatus.OK); 
     }
+
 
     private Boolean controlGenre(Appearance appearance){
         if(appearance.getGenre() != null){
@@ -179,6 +181,7 @@ public class AppearanceService {
         if(listaCharacters.contains(null)){
             return true;
         }else{
+            
             appearance.setCharacters(listaCharacters);
             return false;
         }

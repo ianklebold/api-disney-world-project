@@ -6,7 +6,6 @@ import com.challenge.disneyworld.service.CharacterService;
 import com.challenge.disneyworld.entity.Character;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +25,7 @@ public class CharacterController {
     @PostMapping
     public ResponseEntity<?> createCharacter(@RequestBody Character character){
         
-        return new ResponseEntity<>(characterService.createCharacter(character),
-                                    HttpStatus.CREATED);
+        return characterService.createCharacter(character);
     } 
 
     @GetMapping("/{id}")

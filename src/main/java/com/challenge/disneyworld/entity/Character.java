@@ -95,7 +95,7 @@ public class Character {
      * @param name the name to set
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
 
     /**
@@ -109,7 +109,7 @@ public class Character {
      * @param history the history to set
      */
     public void setHistory(String history) {
-        this.history = history;
+        this.history = history.trim();
     }
 
     /**
@@ -124,6 +124,7 @@ public class Character {
      */
     public void setAppearances(List<Appearance> appearances) {
         this.appearances = appearances;
+        /*
         if(appearances != null){
             for (Appearance appearance : appearances) {
                 if(appearance.getCharacters().contains(this)){
@@ -132,7 +133,7 @@ public class Character {
                 }
                 appearance.getCharacters().add(this);
             }
-        }
+        }*/
     }
 
     /**
