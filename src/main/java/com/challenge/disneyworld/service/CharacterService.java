@@ -65,7 +65,7 @@ public class CharacterService {
         return new ResponseEntity<>("The name of the character is invalid",
         HttpStatus.NOT_ACCEPTABLE);
 
-        if(controlAppearance(character)) return responseAppearanceNoExists;
+        if(crearListAppearance(character)) return responseAppearanceNoExists;
 
         characterRepository.save(character);
 
@@ -170,8 +170,12 @@ public class CharacterService {
             }
 
             if(character.getHistory() == null) 
-            character.setHistory(requestCharacter.get().getHistory());
+            character.setHistory(requestCharacter.get().getHistory());  
 
+            if(updateListAppearance(character,requestCharacter.get())) 
+            return responseAppearanceNoExists;
+
+            System.out.println(character.getAppearances());
             characterRepository.save(character);
 
             return new ResponseEntity<>("Succesfully updated",
@@ -182,7 +186,7 @@ public class CharacterService {
 
     }
 
-    private Boolean controlAppearance(Character character){
+    private Boolean crearListAppearance(Character character){
         ArrayList<Appearance> listAppearances = new ArrayList<Appearance>();
         for (Appearance appearance : character.getAppearances()) {
 
@@ -205,6 +209,61 @@ public class CharacterService {
         }
         
     }
+    //TODO Ver condicional de contain. 
+    /*
+     N       V
+    []      [1,3] Funciona
+    [1,3]   []    Funciona
+    [1]     [3,1]         
+    [1,3,5] [3,1]  
+    [3]     [1,3,5]
+    EUREKA!
+    */
+    private Boolean updateListAppearance(Character character, Character characterRequest){
+        System.out.println("La cantidad de elementos a cargar : "+ character.getAppearances().size());
+        if(character.getAppearances().size() == 0){
+            //list empty
+            for (Appearance element : characterRequest.getAppearances()) {
+                element.getCharacters().remove(characterRequest);
+                appearanceRepository.save(element);
+            }
+        }else{  // 1,3     //1   
+            //First bucle is for delete characters in appearances
+            int contain = 0;
+
+            for (Appearance element : characterRequest.getAppearances()) {
+                for (int i = 0; i < character.getAppearances().size(); i++) {
+                    if(character.getAppearances().get(i).getId() != element.getId()){
+                        contain = contain + 1;
+                    }
+                }
+                if(contain == character.getAppearances().size() - 1){
+                    element.getCharacters().remove(characterRequest);
+                    System.out.println(element.getId() + " Eliminado");
+                    appearanceRepository.save(element);
+                }
+                contain = 0;
+            }
+            for (Appearance element : character.getAppearances()) {
+                Optional<Appearance> appearanceRequest = 
+                appearanceRepository.findById(element.getId());
+                System.out.println(element.getId() + "Existe");
+                if(!appearanceRequest.isPresent()){
+                    return true; //Error exists
+                }
+            }
+            for (Appearance element : character.getAppearances()) {
+                Optional<Appearance> appearanceRequest = 
+                appearanceRepository.findById(element.getId());
+                if(!characterRequest.getAppearances().contains(appearanceRequest.get())){
+                        System.out.println(element.getId() + " No esta, se agrega a la lista");
+                        element.getCharacters().add(characterRequest);
+                        appearanceRepository.save(element);                    
+                    }
+                }
+            }
+            return false;
+        }
 
 
     public ResponseEntity<?> deleteCharacter(Long id){
@@ -228,6 +287,10 @@ public class CharacterService {
         for (Appearance element : characterRequest.getAppearances()) {
             element.getCharacters().remove(characterRequest);    
         }
+    }
+
+    public ArrayList<Character> getAll(){
+        return (ArrayList<Character>) characterRepository.findAll();
     }
   
 

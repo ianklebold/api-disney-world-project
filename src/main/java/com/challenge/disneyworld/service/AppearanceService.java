@@ -181,7 +181,6 @@ public class AppearanceService {
         if(listaCharacters.contains(null)){
             return true;
         }else{
-            
             appearance.setCharacters(listaCharacters);
             return false;
         }

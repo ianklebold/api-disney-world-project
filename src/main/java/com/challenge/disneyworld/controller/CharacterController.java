@@ -2,6 +2,7 @@ package com.challenge.disneyworld.controller;
 
 import com.challenge.disneyworld.service.CharacterService;
 
+import java.util.ArrayList;
 
 import com.challenge.disneyworld.entity.Character;
 
@@ -36,6 +37,11 @@ public class CharacterController {
     @GetMapping
     public ResponseEntity<?> getCharacter(){
         return characterService.getCharacter();
+    }
+
+    @GetMapping("/all")
+    public ArrayList<Character> getallCharacter(){
+        return characterService.getAll();
     }
 
     @PutMapping("/{id}")

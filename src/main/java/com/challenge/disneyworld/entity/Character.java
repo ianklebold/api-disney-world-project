@@ -124,16 +124,9 @@ public class Character {
      */
     public void setAppearances(List<Appearance> appearances) {
         this.appearances = appearances;
-        /*
-        if(appearances != null){
-            for (Appearance appearance : appearances) {
-                if(appearance.getCharacters().contains(this)){
-                    //Evito añadir dos veces el mismo objeto cuando actualizamos.
-                    appearance.getCharacters().remove(this);
-                }
-                appearance.getCharacters().add(this);
-            }
-        }*/
+        for (Appearance appearance : appearances) {
+            appearance.getCharacters().add(this);
+        }
     }
 
     /**
