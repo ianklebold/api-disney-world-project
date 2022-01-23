@@ -11,6 +11,9 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
 
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
@@ -138,7 +141,9 @@ public class CharacterService {
         Optional<Character> requestCharacter = characterRepository.findById(id);
         if(requestCharacter.isPresent()){
             character.setId(requestCharacter.get().getId());
+            
             if(character.getName() != null){
+                System.out.println("Tratamiento nombre");
                 String name = character.getName();
                 Optional<Character> objectControlName = characterRepository.findByName(name);
                 if(objectControlName.isPresent()){
@@ -155,6 +160,7 @@ public class CharacterService {
                 }
 
             }else{
+                System.out.println("Tratamiento nombre set");
                 character.setName(requestCharacter.get().getName());
             }
 
@@ -163,15 +169,19 @@ public class CharacterService {
             HttpStatus.NOT_ACCEPTABLE);
 
             if(character.getBorn_date() == null){
+                System.out.println("Tratamiento fecha nulo");
                 character.setBorn_date(requestCharacter.get().getBorn_date());
             }else{
+                System.out.println("Tratamiento fecha no nulo");
                 if(character.getBorn_date() != requestCharacter.get().getBorn_date()) 
                 return dateBornNotChange;
             }
 
+            System.out.println("Tratamiento historia");
             if(character.getHistory() == null) 
             character.setHistory(requestCharacter.get().getHistory());  
 
+            System.out.println("Update appearance");
             if(updateListAppearance(character,requestCharacter.get())) 
             return responseAppearanceNoExists;
 
@@ -222,27 +232,38 @@ public class CharacterService {
     private Boolean updateListAppearance(Character character, Character characterRequest){
         System.out.println("La cantidad de elementos a cargar : "+ character.getAppearances().size());
         if(character.getAppearances().size() == 0){
-            //list empty
+            System.out.println("Lista vacia");
             for (Appearance element : characterRequest.getAppearances()) {
                 element.getCharacters().remove(characterRequest);
                 appearanceRepository.save(element);
             }
-        }else{  // 1,3     //1   
-            //First bucle is for delete characters in appearances
-            int contain = 0;
+        }else{   
+            System.out.println("Lista no vacia");
+            if(characterRequest.getAppearances().size() != 0){
+                //Appearances before update
+                System.out.println("Hay que eliminar");
+                LongStream idAppearances = characterRequest.getAppearances().stream()
+                                            .mapToLong(appearance -> appearance.getId());
+                //New appearances
+                LongStream idNewAppearances = character.getAppearances().stream()
+                                            .mapToLong(appearance -> appearance.getId());
 
-            for (Appearance element : characterRequest.getAppearances()) {
-                for (int i = 0; i < character.getAppearances().size(); i++) {
-                    if(character.getAppearances().get(i).getId() != element.getId()){
-                        contain = contain + 1;
+                ArrayList<Long> listIdNewAppearances = new ArrayList<Long>();
+
+                for (long element : idNewAppearances.toArray()){
+                    listIdNewAppearances.add(element);
+                }//[1]  [1,3]
+                System.out.println(listIdNewAppearances);
+
+                for (long element : idAppearances.toArray()){
+                    if(!listIdNewAppearances.contains(element)){
+                        System.out.println("Eliminamos : " + element);
+                        Optional<Appearance> appearanceRequest = 
+                        appearanceRepository.findById(element);
+                        appearanceRequest.get().getCharacters().remove(characterRequest);
+                        appearanceRepository.save(appearanceRequest.get());
                     }
                 }
-                if(contain == character.getAppearances().size() - 1){
-                    element.getCharacters().remove(characterRequest);
-                    System.out.println(element.getId() + " Eliminado");
-                    appearanceRepository.save(element);
-                }
-                contain = 0;
             }
             for (Appearance element : character.getAppearances()) {
                 Optional<Appearance> appearanceRequest = 
@@ -257,8 +278,8 @@ public class CharacterService {
                 appearanceRepository.findById(element.getId());
                 if(!characterRequest.getAppearances().contains(appearanceRequest.get())){
                         System.out.println(element.getId() + " No esta, se agrega a la lista");
-                        element.getCharacters().add(characterRequest);
-                        appearanceRepository.save(element);                    
+                        appearanceRequest.get().getCharacters().add(characterRequest);
+                        appearanceRepository.save(appearanceRequest.get());                    
                     }
                 }
             }
