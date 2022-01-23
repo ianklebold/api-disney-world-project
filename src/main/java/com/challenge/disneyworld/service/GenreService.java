@@ -39,7 +39,19 @@ public class GenreService {
 
     private final ResponseEntity<?> responseSuccesfullyCreated= 
     new ResponseEntity<>("Succesfully Created !",
-    HttpStatus.NOT_ACCEPTABLE);
+    HttpStatus.OK);
+
+    private final ResponseEntity<?> responseSuccesfullyUpdated= 
+    new ResponseEntity<>("Succesfully Updated !",
+    HttpStatus.OK);
+
+    private final ResponseEntity<?> responseGenreNotExists= 
+    new ResponseEntity<>("The genre is'nt found !",
+    HttpStatus.NOT_FOUND);
+
+    private final ResponseEntity<?> responseSuccesfullyDeleted= 
+    new ResponseEntity<>("Succesfully Deleted !",
+    HttpStatus.OK);
 
     public ResponseEntity<?> createGenre(ModelCrudGenre genreCRUD){
        if(controlEmptyField(genreCRUD.getName())) return responseFieldsEmpty;
@@ -56,13 +68,46 @@ public class GenreService {
        genreRepository.save(genre);
 
        return responseSuccesfullyCreated;
+    }
 
+    public ResponseEntity<?> updateGenre(ModelCrudGenre genreCRUD, Long id){
+        Optional<Genre> genreRequest = genreRepository.findById(id);
+        if(genreRequest.isPresent()){
+            if(genreCRUD.getName() != null){
+                if(!Helpers.controlRegexName(genreCRUD.getName()))
+                return responseFieldIsNotAcceptable;
 
+                genreCRUD.setName(genreCRUD.getName().trim().toUpperCase());
+
+                if(controlUniqueName(genreCRUD.getName())){
+                    if(genreRepository.findByName(genreCRUD.getName()).get().getId() != id
+                    ) return responseFieldIsNotUnique;
+                }
+                genreRequest.get().setName(genreCRUD.getName());
+            }
+        
+            genreRepository.save(genreRequest.get());
+            return responseSuccesfullyUpdated; 
+        }else{
+            return responseGenreNotExists;
+        }
+    }
+
+    public ResponseEntity<?> deleteGenre(Long id){
+        Optional<Genre> genreRequest = genreRepository.findById(id);
+        if(genreRequest.isPresent()){
+            genreRepository.delete(genreRequest.get());
+            return responseSuccesfullyDeleted;
+        }else{
+            return responseGenreNotExists;
+        }
     }
 
     public ArrayList<Genre> findAllGenres(){
         return (ArrayList<Genre>) genreRepository.findAll();
     }
+
+    
 
     private Boolean controlEmptyField(String name){
         return (
