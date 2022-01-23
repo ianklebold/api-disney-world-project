@@ -219,16 +219,7 @@ public class CharacterService {
         }
         
     }
-    //TODO Ver condicional de contain. 
-    /*
-     N       V
-    []      [1,3] Funciona
-    [1,3]   []    Funciona
-    [1]     [3,1]         
-    [1,3,5] [3,1]  
-    [3]     [1,3,5]
-    EUREKA!
-    */
+
     private Boolean updateListAppearance(Character character, Character characterRequest){
         System.out.println("La cantidad de elementos a cargar : "+ character.getAppearances().size());
         if(character.getAppearances().size() == 0){
