@@ -8,6 +8,8 @@ import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.repository.GenreRepository;
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.utils.models.ModelCrudGenre;
+import com.challenge.disneyworld.utils.models.ModelDetailGenre;
+import com.challenge.disneyworld.utils.models.builders.BuilderGenre;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -106,11 +108,29 @@ public class GenreService {
         }
     }
 
-    public ArrayList<Genre> findAllGenres(){
-        return (ArrayList<Genre>) genreRepository.findAll();
-    }
+    public ResponseEntity<?> findAllGenres(){
+        ArrayList<Genre> lGenres = (ArrayList<Genre>) genreRepository.findAll();
 
-    
+       if(lGenres.size() > 0){
+            BuilderGenre builder = new BuilderGenre();
+            
+            ArrayList<ModelDetailGenre> requestGenres = 
+            new ArrayList<ModelDetailGenre>();
+
+            for (Genre g : lGenres) {
+                requestGenres.add(
+                    builder.setNameGenre(g.getName())
+                            .setImage(g.getProfileimage())
+                            .setAppearances(g.getAppearances())
+                            .builder()
+                );
+            } 
+            return new ResponseEntity<>(requestGenres, HttpStatus.OK);  
+        }else{
+            return new ResponseEntity<>("No exists Genrs",
+            HttpStatus.NOT_FOUND);
+        }
+    }
 
     private Boolean controlEmptyField(String name){
         return (

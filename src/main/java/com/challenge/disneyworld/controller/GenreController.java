@@ -70,7 +70,7 @@ public class GenreController {
     }
 
     @GetMapping("/all")
-    public ArrayList<Genre> findAllGenres(){
+    public ResponseEntity<?> findAllGenres(){
         
         return genreService.findAllGenres();
     }
