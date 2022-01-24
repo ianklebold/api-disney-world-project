@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 @Entity
-@PrimaryKeyJoinColumn(name = "id_image")
+@PrimaryKeyJoinColumn(name = "id")
 public class ProfileImage extends Image{
     
 }

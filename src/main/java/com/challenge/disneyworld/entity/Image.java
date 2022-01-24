@@ -1,7 +1,6 @@
 package com.challenge.disneyworld.entity;
 
-
-import javax.validation.constraints.NotEmpty;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -10,47 +9,78 @@ import javax.persistence.*;
 public class Image {
     
     @Id
-    @Column(name = "id_image")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator="uuid")
+    @GenericGenerator(name="uuid",strategy="uuid2")
+    private String id;
 
-    @NotEmpty
     @Column(name = "name", nullable = false, updatable = true)
-    private String url;
+    private String name;
+
+    @Column(name = "fileType", nullable = false, updatable = true)
+    private String fileType;
+
+    @Lob
+    @Column(name = "fileData", nullable = false, updatable = true)
+    private byte[] fileData;
 
     public Image() {
     }
 
-    public Image(@NotEmpty String url) {
-        this.url = url;
-    }
 
     /**
-     * @return Long return the id
+     * @return String return the id
      */
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * @return String return the url
+     * @return String return the name
      */
-    public String getUrl() {
-        return url;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param url the url to set
+     * @param name the name to set
      */
-    public void setUrl(String url) {
-        this.url = url;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return String return the fileType
+     */
+    public String getFileType() {
+        return fileType;
+    }
+
+    /**
+     * @param fileType the fileType to set
+     */
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    /**
+     * @return byte[] return the fileData
+     */
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    /**
+     * @param fileData the fileData to set
+     */
+    public void setFileData(byte[] fileData) {
+        this.fileData = fileData;
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.challenge.disneyworld.entity.Genre;
+import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.repository.GenreRepository;
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.utils.models.ModelCrudGenre;
@@ -53,7 +54,8 @@ public class GenreService {
     new ResponseEntity<>("Succesfully Deleted !",
     HttpStatus.OK);
 
-    public ResponseEntity<?> createGenre(ModelCrudGenre genreCRUD){
+    public ResponseEntity<?> createGenre(ModelCrudGenre genreCRUD, 
+                                         ProfileImage profileImage){
        if(controlEmptyField(genreCRUD.getName())) return responseFieldsEmpty;
 
        if(!Helpers.controlRegexName(genreCRUD.getName()))
@@ -65,6 +67,7 @@ public class GenreService {
        //TODO COMPLETAR IMAGEN
        Genre genre = new Genre();
        genre.setName(genreCRUD.getName());
+       genre.setProfileimage(profileImage);
        genreRepository.save(genre);
 
        return responseSuccesfullyCreated;

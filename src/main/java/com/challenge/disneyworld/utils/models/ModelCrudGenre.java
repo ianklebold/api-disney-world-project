@@ -2,14 +2,13 @@ package com.challenge.disneyworld.utils.models;
 
 public class ModelCrudGenre {
     private String name;
-    private String urlImage;
 
     public ModelCrudGenre() {
     }
 
-    public ModelCrudGenre(String name, String urlImage) {
+    public ModelCrudGenre(String name) {
         this.name = name;
-        this.urlImage = urlImage;
+        
     }
 
     /**
@@ -24,19 +23,6 @@ public class ModelCrudGenre {
      */
     public void setName(String name) {
         this.name = name;
-    }
-    /**
-     * @return String return the urlImage
-     */
-    public String getUrlImage() {
-        return urlImage;
-    }
-
-    /**
-     * @param urlImage the urlImage to set
-     */
-    public void setUrlImage(String urlImage) {
-        this.urlImage = urlImage;
     }
 
 }
