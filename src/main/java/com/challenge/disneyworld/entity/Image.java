@@ -26,6 +26,11 @@ public class Image {
     public Image() {
     }
 
+    public Image(String name, String fileType, byte[] fileData) {
+        this.name = name;
+        this.fileType = fileType;
+        this.fileData = fileData;
+    }
 
     /**
      * @return String return the id

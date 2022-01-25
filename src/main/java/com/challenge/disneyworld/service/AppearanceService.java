@@ -3,10 +3,14 @@ package com.challenge.disneyworld.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.Genre;
+import com.challenge.disneyworld.entity.PostImage;
+import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.repository.AppearanceRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
 import com.challenge.disneyworld.repository.GenreRepository;
@@ -66,7 +70,9 @@ public class AppearanceService {
     new ResponseEntity<>("The genre not exists",
     HttpStatus.NOT_FOUND);
 
-    public ResponseEntity<?> createAppearance(Appearance appearance){
+    public ResponseEntity<?> createAppearance(Appearance appearance,
+                                              ArrayList<PostImage> postImage,
+                                              ProfileImage image){
         if(controlEmptyFields(appearance)) return responseFieldsEmpty;
 
         if(!Helpers.controlDate(appearance.getCreation_date().toString())) 
@@ -78,8 +84,10 @@ public class AppearanceService {
 
         if(controlGenre(appearance)) return responseGenreNoExists;
 
-
+        
         appearance.setHistory(appearance.getHistory().trim());
+        appearance.setProfileimage(image);
+        appearance.setPostImage(postImage);
         
         appearanceRepository.save(appearance);
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
@@ -194,6 +202,7 @@ public class AppearanceService {
     }
 
     //TODO DELETE THIS METHOD
+    
     public ResponseEntity<?> getall(){
         ArrayList<Appearance> listMovies = 
         (ArrayList<Appearance>) appearanceRepository.findAll();
@@ -221,6 +230,8 @@ public class AppearanceService {
                                    .setType(appearances.get().getType())
                                    .setCreationDate(appearances.get().getCreation_date())
                                    .setListCharacters(appearances.get().getCharacters())
+                                   .setProfileImage(appearances.get().getProfileimage())
+                                   .setPostImage(appearances.get().getPostImage())
                                    .modelDetailAppearance();
         return new ResponseEntity<>(requestAppearance, HttpStatus.OK);
         }else{
@@ -228,6 +239,7 @@ public class AppearanceService {
         }
     }
 
+    
     private ArrayList<ModelListAppearance> constructorSeriesOrMovies(ArrayList<Appearance> lAppearances){
         BuilderAppearance builder = new BuilderAppearance();
         ArrayList<ModelListAppearance> requestAppearance = new ArrayList<ModelListAppearance>();

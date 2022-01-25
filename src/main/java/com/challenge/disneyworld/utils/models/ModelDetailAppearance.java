@@ -2,6 +2,7 @@ package com.challenge.disneyworld.utils.models;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 
@@ -14,11 +15,10 @@ public class ModelDetailAppearance {
     private EnumTypeAppearance type;
     private String nameGenere;
     private ArrayList<ModelCharacter> listCharacters = new ArrayList<ModelCharacter>();
-//  private String profileimage;
-//  private List<PostImage> postImage = new ArrayList<PostImage>();
+    private ModelImage profileimage;
+    private List<ModelImage> postImage = new ArrayList<ModelImage>();
 
-
-
+    
 
     /**
      * @return Long return the id
@@ -118,7 +118,6 @@ public class ModelDetailAppearance {
         this.nameGenere = nameGenere;
     }
 
-
     /**
      * @return ArrayList<ModelCharacter> return the listCharacters
      */
@@ -131,6 +130,34 @@ public class ModelDetailAppearance {
      */
     public void setListCharacters(ArrayList<ModelCharacter> listCharacters) {
         this.listCharacters = listCharacters;
+    }
+
+    /**
+     * @return ModelImage return the profileimage
+     */
+    public ModelImage getProfileimage() {
+        return profileimage;
+    }
+
+    /**
+     * @param profileimage the profileimage to set
+     */
+    public void setProfileimage(ModelImage profileimage) {
+        this.profileimage = profileimage;
+    }
+
+    /**
+     * @return List<ModelImage> return the postImage
+     */
+    public List<ModelImage> getPostImage() {
+        return postImage;
+    }
+
+    /**
+     * @param postImage the postImage to set
+     */
+    public void setPostImage(List<ModelImage> postImage) {
+        this.postImage = postImage;
     }
 
 }

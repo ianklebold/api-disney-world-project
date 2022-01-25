@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.challenge.disneyworld.entity.Character;
+import com.challenge.disneyworld.entity.PostImage;
+import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 import com.challenge.disneyworld.utils.models.ModelCharacter;
 import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
+import com.challenge.disneyworld.utils.models.ModelImage;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
 
 public class BuilderDetailAppearances implements IAppearanceBuilder{
@@ -19,10 +22,29 @@ public class BuilderDetailAppearances implements IAppearanceBuilder{
     private String history;
     private EnumTypeAppearance type;
     private String nameGenere;
+    private ModelImage profileImage;
+    private ArrayList<ModelImage> postsImages = new ArrayList<ModelImage>();
     private ArrayList<ModelCharacter> listCharacters = new ArrayList<ModelCharacter>();
 
     public BuilderDetailAppearances setId(Long id){
         this.id = id;
+        return this;
+    }
+
+    public BuilderDetailAppearances setProfileImage(ProfileImage image){
+        String url = "http://localhost:8080/disneyworld/api/v1/avatar/";
+        this.profileImage = new ModelImage(image.getName(), url+image.getId());
+        return this;
+    }
+
+    public BuilderDetailAppearances setPostImage(List<PostImage> list){
+        String url = "http://localhost:8080/disneyworld/api/v1/postimages/";
+        if(list.size() > 0){
+            for (PostImage element : list) {
+                this.postsImages.add(new ModelImage(element.getName(), 
+                                     url+element.getId()));
+            }
+        }
         return this;
     }
 
@@ -79,6 +101,8 @@ public class BuilderDetailAppearances implements IAppearanceBuilder{
         appearance.setNameGenere(this.nameGenere);
         appearance.setType(this.type);
         appearance.setListCharacters(this.listCharacters);
+        appearance.setProfileimage(this.profileImage);
+        appearance.setPostImage(this.postsImages);
         return appearance;
     }
 

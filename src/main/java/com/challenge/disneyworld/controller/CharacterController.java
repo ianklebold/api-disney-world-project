@@ -23,7 +23,7 @@ public class CharacterController {
     @Autowired
     CharacterService characterService;
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<?> createCharacter(@RequestBody Character character){
         
         return characterService.createCharacter(character);
