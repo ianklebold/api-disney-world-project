@@ -1,9 +1,7 @@
 package com.challenge.disneyworld.controller;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 
-import com.challenge.disneyworld.entity.Genre;
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.service.FileUploadService;
 import com.challenge.disneyworld.service.GenreService;

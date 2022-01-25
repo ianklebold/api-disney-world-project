@@ -1,7 +1,6 @@
 package com.challenge.disneyworld.service;
 
 import com.challenge.disneyworld.entity.Image;
-import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.repository.ImageRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
