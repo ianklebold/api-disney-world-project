@@ -2,6 +2,8 @@ package com.challenge.disneyworld.controller;
 
 import java.net.URISyntaxException;
 
+import javax.transaction.Transactional;
+
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.service.FileUploadService;
 import com.challenge.disneyworld.service.GenreService;
@@ -41,19 +43,6 @@ public class GenreController {
         return genreService.createGenre(genreCrud,profileImage);
     }
 
-    @PostMapping(value="/prueba", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> pruebaGnre(
-           @RequestPart(value="files",required=false) MultipartFile files[],
-           @RequestPart(value="genre", required=true) ModelCrudGenre genreCrud)
-           throws URISyntaxException{
-        
-        System.out.println("Funciona perefecto");
-        System.out.println(files[0].getName());
-        System.out.println(genreCrud.getName());
-        return new ResponseEntity<>("Succesfully Created !",
-        HttpStatus.OK);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<?> updateGenre(@RequestBody ModelCrudGenre genreCrud,
                                          @PathVariable(name = "id") Long id){
@@ -67,10 +56,18 @@ public class GenreController {
         return genreService.deleteGenre(id);
     }
 
+    @Transactional
     @GetMapping("/all")
     public ResponseEntity<?> findAllGenres(){
         
         return genreService.findAllGenres();
+    }
+    
+    @Transactional
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findGenreById(@PathVariable(name = "id") Long id){
+        
+        return genreService.findGenreById(id);
     }
 
     

@@ -69,6 +69,7 @@ public class GenreService {
        //TODO COMPLETAR IMAGEN
        Genre genre = new Genre();
        genre.setName(genreCRUD.getName());
+       System.out.println(profileImage);
        genre.setProfileimage(profileImage);
        genreRepository.save(genre);
 
@@ -142,4 +143,23 @@ public class GenreService {
         Optional<Genre> genreRequest = genreRepository.findByName(name);
         return (genreRequest.isPresent())?true:false;
     }
+
+    public  ResponseEntity<?> findGenreById(Long id){
+        Optional<Genre> genreRequest = genreRepository.findById(id);
+
+        if(genreRequest.isPresent()){
+            BuilderGenre builder = new BuilderGenre();
+            
+            ModelDetailGenre requestGenres = 
+                    builder.setNameGenre(genreRequest.get().getName())
+                    .setImage(genreRequest.get().getProfileimage())
+                    .setAppearances(genreRequest.get().getAppearances())
+                    .builder();
+            return new ResponseEntity<>(requestGenres, HttpStatus.OK); 
+        }else{
+            return new ResponseEntity<>("No exists Genre with id: "+id,
+            HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class ModelListAppearance {
     
     private String title;
-    //private String urlImagen;
+    private ModelImage image;
     private LocalDate creation_date;
 
     public ModelListAppearance() {}
@@ -36,6 +36,20 @@ public class ModelListAppearance {
      */
     public void setCreation_date(LocalDate creation_date) {
         this.creation_date = creation_date;
+    }
+
+    /**
+     * @return ProfileImage return the image
+     */
+    public ModelImage getImage() {
+        return image;
+    }
+
+    /**
+     * @param image the image to set
+     */
+    public void setImage(ModelImage image) {
+        this.image = image;
     }
 
 }

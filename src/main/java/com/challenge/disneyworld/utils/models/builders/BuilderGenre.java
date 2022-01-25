@@ -20,8 +20,10 @@ public class BuilderGenre implements IGenreBuilder{
     }
 
     public BuilderGenre setImage(ProfileImage image){
-        String url = "http://localhost:8080/disneyworld/api/v1/avatar/";
-        this.image = new ModelImage(image.getName(), url+image.getId());
+        if(image != null){
+            String url = "http://localhost:8080/disneyworld/api/v1/avatar/";
+            this.image = new ModelImage(image.getName(), url+image.getId());
+        }
         return this;
     }
 

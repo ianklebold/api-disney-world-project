@@ -189,9 +189,9 @@ public class Appearance {
      */
     public void setGenre(Genre genre) {
         this.genre = genre;
-        if(genre != null){
+        /*if(genre != null){
             genre.getAppearances().add(this);
-        }
+        }*/
     }
 
     /**
@@ -239,10 +239,16 @@ public class Appearance {
     }
 
     /**
-     * @param postImage the postImage to set
+     * @param images the postImage to set
      */
-    public void setPostImage(List<PostImage> postImage) {
-        this.postImage = postImage;
+    public void setPostImage(List<PostImage> images) {
+        this.postImage = images;
+    }
+
+    public void addImages(ArrayList<PostImage> postImage) {
+        for (PostImage element : postImage) {
+            this.getPostImage().add(element);
+        }
     }
 
 }

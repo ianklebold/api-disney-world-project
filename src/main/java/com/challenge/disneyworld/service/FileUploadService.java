@@ -65,4 +65,10 @@ public class FileUploadService {
         }
     } 
 
+    public void deleteImagePostToDB(ArrayList<PostImage> postImage){
+        for (PostImage element : postImage) {
+            imageRepository.delete(element);
+        }
+    }
+
 }

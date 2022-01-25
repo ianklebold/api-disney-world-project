@@ -3,17 +3,17 @@ package com.challenge.disneyworld.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.Genre;
+import com.challenge.disneyworld.entity.Image;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.repository.AppearanceRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
 import com.challenge.disneyworld.repository.GenreRepository;
+import com.challenge.disneyworld.repository.ImageRepository;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
@@ -31,15 +31,18 @@ public class AppearanceService {
     AppearanceRepository appearanceRepository;
     CharacterRepository characterRepository;
     GenreRepository genreRepository;
+    ImageRepository imageRepository;
 
     @Autowired
     public AppearanceService(AppearanceRepository appearanceRepository,
                              CharacterRepository characterRepository,
-                             GenreRepository genreRepository){
+                             GenreRepository genreRepository,
+                             ImageRepository imageRepository){
 
         this.appearanceRepository = appearanceRepository;
         this.characterRepository = characterRepository;
         this.genreRepository = genreRepository;
+        this.imageRepository = imageRepository;
     }
 
     private final ResponseEntity<?> responseFieldsEmpty = 
@@ -64,6 +67,10 @@ public class AppearanceService {
 
     private final ResponseEntity<?> responseDateNotAceptable = 
     new ResponseEntity<>("The format of date is incorrect. Format : YYYY-MM-dd",
+    HttpStatus.NOT_ACCEPTABLE);
+
+    private final ResponseEntity<?> responseImageNotAceptable = 
+    new ResponseEntity<>("The images uploaded not exist.",
     HttpStatus.NOT_ACCEPTABLE);
 
     private final ResponseEntity<?> responseGenreNoExists = 
@@ -93,7 +100,9 @@ public class AppearanceService {
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updateAppearance(Appearance appearance, Long id){
+    public ResponseEntity<?> updateAppearance(Appearance appearance,Long id,
+                                              ArrayList<PostImage> postImage,
+                                              ProfileImage image){
         Appearance requestAppearance = appearanceRepository.findById(id).get();
         if(requestAppearance != null){
             appearance.setId(id);
@@ -117,9 +126,23 @@ public class AppearanceService {
                 appearance.setHistory(requestAppearance.getHistory());
             }
 
-            /*
-            TODO CONTROL IMAGENES
-            */
+            if(controlUpdateImages(appearance, requestAppearance)) 
+            return responseImageNotAceptable;
+
+            if(image != null){
+                if(requestAppearance.getProfileimage() != null)
+                imageRepository.delete(requestAppearance.getProfileimage());
+                
+                appearance.setProfileimage(image);
+            }else{
+                imageProfile(appearance, requestAppearance);
+            }
+
+            if(postImage != null){
+                System.out.println(postImage);
+                appearance.addImages(postImage);
+            }
+
             if(appearance.getType() == null){
                 appearance.setType(requestAppearance.getType());
             }
@@ -136,8 +159,86 @@ public class AppearanceService {
         }else{
             return responseAppearanceNoExists;
         }
+    }
 
+    private void imageProfile(Appearance appearanceUpdate,
+                              Appearance requestAppearance){
+        Optional<Image> imageRequest = imageRepository.findById(
+                        appearanceUpdate.getProfileimage().getId());
+        if(appearanceUpdate.getProfileimage() != null){
+            if(imageRequest.isPresent())
+            requestAppearance.setProfileimage((ProfileImage) imageRequest.get());
+        }else{
+            imageRepository.delete(imageRequest.get());
+            requestAppearance.setProfileimage(null);
+        }                         
+    }
 
+    private Boolean controlUpdateImages(Appearance appearanceUpdate,
+                                        Appearance requestAppearance){
+
+        if(appearanceUpdate.getPostImage().size() == 0 || 
+           appearanceUpdate.getPostImage() == null){
+            for (PostImage element : requestAppearance.getPostImage()) {
+                imageRepository.delete(element);
+            }
+            return false;
+        }else{
+            ArrayList<PostImage> images = getAllImages(appearanceUpdate);
+            Boolean valid = controlImages(images, requestAppearance);
+            if(valid) return true;
+            if(images != null){
+                for (PostImage element : requestAppearance.getPostImage()){
+                   if(!images.contains(element))imageRepository.delete(element);
+                }
+            }
+            images = obtainImages(requestAppearance);
+            appearanceUpdate.setPostImage(images);
+        }
+        return false;
+    }
+
+    private Boolean controlImages(ArrayList<PostImage> images, 
+                            Appearance requestAppearance){
+        int count = 0;
+        if(images == null) return true;
+        for (PostImage element : images) {
+            if(!requestAppearance.getPostImage().contains(element)){
+                count++;
+            }
+        }
+        if(count > 0){
+            for (PostImage element : images) {
+                imageRepository.delete(element);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private ArrayList<PostImage> obtainImages(Appearance apperanceUpdate){
+        ArrayList<PostImage> images = new ArrayList<PostImage>();
+        for (PostImage element : apperanceUpdate.getPostImage()) {
+            Optional<Image> imageRequest = imageRepository.findById(element.getId());
+            if(imageRequest.isPresent()){
+                images.add((PostImage) imageRequest.get());
+            }
+        }
+        return images;
+    }
+
+    private ArrayList<PostImage> getAllImages(Appearance apperanceUpdate){
+        ArrayList<PostImage> images = new ArrayList<PostImage>();
+        for (PostImage element : apperanceUpdate.getPostImage()) {
+            Optional<Image> imageRequest = imageRepository.findById(element.getId());
+            if(imageRequest.isPresent()){
+                images.add((PostImage) imageRequest.get());
+            }else{
+                images.add(null);
+            }
+        }
+        if(images.contains(null))images = null;
+        return images;
     }
 
     public ResponseEntity<?> deleteAppearance(Long id){
@@ -157,6 +258,7 @@ public class AppearanceService {
         if(appearance.getGenre() != null){
             Optional<Genre> genere = genreRepository.findById(appearance.getGenre().getId());
             if(genere.isPresent()){
+                System.out.println(genere.get());
                 appearance.setGenre(genere.get());
                 return false;
             }else{
@@ -231,6 +333,7 @@ public class AppearanceService {
                                    .setCreationDate(appearances.get().getCreation_date())
                                    .setListCharacters(appearances.get().getCharacters())
                                    .setProfileImage(appearances.get().getProfileimage())
+                                   .setGenre(appearances.get().getGenre())
                                    .setPostImage(appearances.get().getPostImage())
                                    .modelDetailAppearance();
         return new ResponseEntity<>(requestAppearance, HttpStatus.OK);
@@ -248,7 +351,7 @@ public class AppearanceService {
             requestAppearance.add(
                 builder.setTitle(movie.getTitle()) 
                        .setCreation_Date(movie.getCreation_date())
-                //     .setImage(movie.getProfileimage())
+                       .setImage(movie.getProfileimage())
                        .modelListAppearance()
             );
         }

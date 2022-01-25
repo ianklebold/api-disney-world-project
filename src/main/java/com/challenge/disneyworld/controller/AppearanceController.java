@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +50,22 @@ public class AppearanceController {
     }
 
     @Transactional
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAppearance(
+        @PathVariable(name = "id") Long id,
+        @RequestPart(value="profileImage",required=false) MultipartFile image,
+        @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
+        @RequestPart(value="appearance", required=true) Appearance appearance){
+
+        ArrayList<PostImage> postImages = new ArrayList<PostImage>();
+        postImages = fileUploadService.uploadImagePostToDB(postImage);
+        ProfileImage profileImage = new ProfileImage();
+        profileImage = fileUploadService.uploadImageProfileToDB(image);
+
+        return appearanceService.updateAppearance(appearance, id,postImages,profileImage);
+    }
+
+    @Transactional
     @GetMapping("/movies")
     public ResponseEntity<?> getMovies(){
         return appearanceService.getMovies();
@@ -66,11 +81,6 @@ public class AppearanceController {
     @GetMapping("/series")
     public ResponseEntity<?> getSeries(){
         return appearanceService.getSeries();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateAppearance(@PathVariable(name = "id") Long id, @RequestBody Appearance appearance){
-        return appearanceService.updateAppearance(appearance, id);
     }
 
     @Transactional
