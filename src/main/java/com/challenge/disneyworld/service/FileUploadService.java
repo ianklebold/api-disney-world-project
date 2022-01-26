@@ -51,12 +51,8 @@ public class FileUploadService {
                     return null;
                 }
             }
-            System.out.println("Entro al bucle"+Images.size());
+
             for (PostImage post_image : Images) {
-                System.out.println(post_image.getName());
-                System.out.println(post_image.getFileType());
-                System.out.println(post_image.getFileData());
-                System.out.println("Aca revienta");
                 imageRepository.save(post_image);
             }
             return Images;

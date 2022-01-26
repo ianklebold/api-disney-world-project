@@ -40,7 +40,7 @@ public class CharacterController {
     public ResponseEntity<?> createCharacter(
         @RequestPart(value="profileImage",required=false) MultipartFile image,
         @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
-        @RequestPart(value="appearance", required=true) Character character)
+        @RequestPart(value="character", required=true) Character character)
         throws URISyntaxException{
         
         ResponseEntity<?> controlCharacter = characterService.controlCharacter(character);
