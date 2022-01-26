@@ -16,11 +16,14 @@ import java.util.stream.LongStream;
 
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
+import com.challenge.disneyworld.entity.PostImage;
+import com.challenge.disneyworld.entity.ProfileImage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CharacterService {
@@ -51,8 +54,16 @@ public class CharacterService {
     new ResponseEntity<>("The Movie/Serie not exists",
     HttpStatus.NOT_FOUND);
 
-    public ResponseEntity<?> createCharacter(Character character){
+    public ResponseEntity<?> createCharacter(ArrayList<PostImage> postImage,
+                                             ProfileImage imageCharacter,
+                                             Character character){
+        
+        characterRepository.save(character);
+        return new ResponseEntity<>("Succesfully created",
+        HttpStatus.OK);
+    }
 
+    public ResponseEntity<?> controlCharacter(Character character){
         if(controlEmptyFields(character)) return responseFieldsEmpty;
 
         Optional<Character> objectControlName = 
@@ -69,10 +80,7 @@ public class CharacterService {
 
         if(crearListAppearance(character)) return responseAppearanceNoExists;
 
-        characterRepository.save(character);
-
-        return new ResponseEntity<>("Succesfully created",
-        HttpStatus.OK);
+        return null;
     }
 
 

@@ -69,7 +69,6 @@ public class GenreService {
        //TODO COMPLETAR IMAGEN
        Genre genre = new Genre();
        genre.setName(genreCRUD.getName());
-       System.out.println(profileImage);
        genre.setProfileimage(profileImage);
        genreRepository.save(genre);
 
