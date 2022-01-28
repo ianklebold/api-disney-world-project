@@ -46,41 +46,59 @@ public class CharacterController {
         ResponseEntity<?> controlCharacter = characterService.controlCharacter(character);
         
         if(controlCharacter != null) return controlCharacter;
+        
+        ArrayList<PostImage> postImages = new ArrayList<PostImage>();
+        postImages = fileUploadService.uploadImagePostToDB(postImage);
+        ProfileImage profileImage = new ProfileImage();
+        profileImage = fileUploadService.uploadImageProfileToDB(image);
+        return characterService.createCharacter(postImages,profileImage,character);
+        
+    } 
+
+    @Transactional
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCharacter(
+        @PathVariable(name = "id") Long id,
+        @RequestPart(value="profileImage",required=false) MultipartFile image,
+        @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
+        @RequestPart(value="character", required=true) Character character){
+    
+        ResponseEntity<?> controlCharacter = 
+        characterService.updateControlCharacter(character,id);
+        if(controlCharacter != null) return controlCharacter;
         try {
             ArrayList<PostImage> postImages = new ArrayList<PostImage>();
             postImages = fileUploadService.uploadImagePostToDB(postImage);
             ProfileImage profileImage = new ProfileImage();
             profileImage = fileUploadService.uploadImageProfileToDB(image);
-            return characterService.createCharacter(postImages,profileImage,character);
+            return characterService.updateCharacter(postImages,profileImage,character);
         } catch (Exception e) {
-            return new ResponseEntity<>("Character can't created",
+            return new ResponseEntity<>("Character can't updated",
             HttpStatus.NOT_ACCEPTABLE);
         }
         
-    } 
+    }
 
+    @Transactional
     @GetMapping("/{id}")
     public ResponseEntity<?> getCharacterById(@PathVariable(name = "id") Long id){
         return characterService.getCharacterById(id);
     }
 
+    @Transactional
     @GetMapping
     public ResponseEntity<?> getCharacter(){
         return characterService.getCharacter();
     }
-
+    
+    @Transactional
     @GetMapping("/all")
     public ArrayList<Character> getallCharacter(){
         return characterService.getAll();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCharacter(@RequestBody Character character,
-                                             @PathVariable(name = "id") Long id){
 
-        return characterService.updateCharacter(character,id);
-    }
-
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCharacter(@PathVariable(name = "id") Long id){
         return characterService.deleteCharacter(id);

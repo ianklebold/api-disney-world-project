@@ -2,6 +2,7 @@ package com.challenge.disneyworld.service;
 
 import com.challenge.disneyworld.repository.AppearanceRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
+import com.challenge.disneyworld.repository.ImageRepository;
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.utils.models.ModelDetailCharacter;
 import com.challenge.disneyworld.utils.models.ModelListCharacter;
@@ -16,6 +17,7 @@ import java.util.stream.LongStream;
 
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
+import com.challenge.disneyworld.entity.Image;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
 
@@ -23,19 +25,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CharacterService {
     
     CharacterRepository characterRepository;
     AppearanceRepository appearanceRepository;
-    
+    ImageRepository imageRepository;
 
     @Autowired
-    public CharacterService(CharacterRepository characterRepository, AppearanceRepository appearanceRepository){
+    public CharacterService(
+        CharacterRepository characterRepository, 
+        AppearanceRepository appearanceRepository,
+        ImageRepository imageRepository){
         this.characterRepository = characterRepository;
         this.appearanceRepository = appearanceRepository;
+        this.imageRepository = imageRepository;
     }
 
     private final ResponseEntity<?> responseFieldsEmpty = 
@@ -54,10 +59,17 @@ public class CharacterService {
     new ResponseEntity<>("The Movie/Serie not exists",
     HttpStatus.NOT_FOUND);
 
+    private final ResponseEntity<?> responseImageNotAceptable = 
+    new ResponseEntity<>("The images uploaded not exist.",
+    HttpStatus.NOT_ACCEPTABLE);
+
     public ResponseEntity<?> createCharacter(ArrayList<PostImage> postImage,
                                              ProfileImage imageCharacter,
                                              Character character){
-        
+        System.out.println(imageCharacter);
+        System.out.println(postImage);
+        character.setProfileimage(imageCharacter);
+        character.setPostImage(postImage);
         characterRepository.save(character);
         return new ResponseEntity<>("Succesfully created",
         HttpStatus.OK);
@@ -101,12 +113,14 @@ public class CharacterService {
             BuilderCharacter builder = new BuilderCharacter();
  
             ModelDetailCharacter characterRequest;
-                
+            System.out.println(character.get().getProfileimage());    
             characterRequest = builder.setId(character.get().getId())
                         .setAge(returnAge(character.get()))
                         .setName(character.get().getName())
                         .setHistory(character.get().getHistory())
                         .setAppearances(character.get().getAppearances())
+                        .setProfileImage(character.get().getProfileimage())
+                        .setPostImage(character.get().getPostImage())
                         .builder();
             
             return new ResponseEntity<>(characterRequest, HttpStatus.OK);
@@ -134,6 +148,7 @@ public class CharacterService {
                     
                 requestCharacters.add(
                     builder.setName(c.getName())
+                    .setProfileImage(c.getProfileimage())
                     .builderListCharacter()
                 );
             } 
@@ -144,63 +159,175 @@ public class CharacterService {
         }
     }
 
-    public ResponseEntity<?> updateCharacter(Character character,Long id){
+    public ResponseEntity<?> updateControlCharacter(Character character,Long id){
         Optional<Character> requestCharacter = characterRepository.findById(id);
         if(requestCharacter.isPresent()){
+
+            ResponseEntity<?> controlName;
             character.setId(requestCharacter.get().getId());
             
-            if(character.getName() != null){
-                System.out.println("Tratamiento nombre");
-                String name = character.getName();
-                Optional<Character> objectControlName = characterRepository.findByName(name);
-                if(objectControlName.isPresent()){
-                    if(objectControlName.get().getId() != character.getId()){
-                        return new ResponseEntity<>("Exists character with the same name",
-                        HttpStatus.NOT_ACCEPTABLE);
-                    }
-
-                }
-
-                if(character.getName().replaceAll("\\s+","").isEmpty()){
-                    return new ResponseEntity<>("The field name can't be empty",
-                        HttpStatus.NOT_ACCEPTABLE);
-                }
-
-            }else{
-                System.out.println("Tratamiento nombre set");
-                character.setName(requestCharacter.get().getName());
-            }
+            controlName = controlNameCharacter(character, requestCharacter.get());
+            if(controlName != null) return controlName;
 
             if(!Helpers.controlRegexName(character.getName()))
             return new ResponseEntity<>("The name of the character is invalid",
             HttpStatus.NOT_ACCEPTABLE);
 
-            if(character.getBorn_date() == null){
-                System.out.println("Tratamiento fecha nulo");
-                character.setBorn_date(requestCharacter.get().getBorn_date());
-            }else{
-                System.out.println("Tratamiento fecha no nulo");
-                if(character.getBorn_date() != requestCharacter.get().getBorn_date()) 
-                return dateBornNotChange;
-            }
+            controlName = controlBornDateCharacter(character, requestCharacter.get());
+            if(controlName != null) return controlName;
 
-            System.out.println("Tratamiento historia");
             if(character.getHistory() == null) 
             character.setHistory(requestCharacter.get().getHistory());  
 
-            System.out.println("Update appearance");
             if(updateListAppearance(character,requestCharacter.get())) 
             return responseAppearanceNoExists;
 
-            System.out.println(character.getAppearances());
-            characterRepository.save(character);
-
-            return new ResponseEntity<>("Succesfully updated",
-            HttpStatus.OK);
+            return null;
         }else{
             return responseCharacterNoExists;
         }
+    }
 
+    public ResponseEntity<?>  updateCharacter(
+        ArrayList<PostImage> postImage,
+        ProfileImage imageCharacter,
+        Character character){
+
+        Character requestCharacter = 
+        characterRepository.findById(character.getId()).get();
+
+        if(controlUpdateImages(character, requestCharacter)) 
+            return responseImageNotAceptable;
+
+        if(imageCharacter != null){
+            if(requestCharacter.getProfileimage() != null)
+            imageRepository.delete(requestCharacter.getProfileimage());
+            
+            character.setProfileimage(imageCharacter);
+        }else{
+            controlProfileImage(character, requestCharacter);
+        }
+
+        if(postImage != null){
+            character.addImages(postImage);
+        }
+
+        characterRepository.save(character);
+        return new ResponseEntity<>("Succesfully updated",HttpStatus.OK);
+    }
+
+    private void controlProfileImage(Character character,
+                                     Character requestCharacter){
+        Optional<Image> imageRequest = imageRepository.findById(
+            character.getProfileimage().getId());
+        if(character.getProfileimage()!= null){
+        if(imageRequest.isPresent())
+            requestCharacter.setProfileimage((ProfileImage) imageRequest.get());
+        }else{
+            imageRepository.delete(imageRequest.get());
+            requestCharacter.setProfileimage(null);
+        }
+    }
+
+    private Boolean controlUpdateImages(Character character,
+                                        Character requestCharacter){
+
+        if(character.getPostImage().size() == 0 || 
+           character.getPostImage() == null){
+            for (PostImage element : requestCharacter.getPostImage()) {
+                imageRepository.delete(element);
+            }
+            return false;
+        }else{
+            ArrayList<PostImage> images = getAllImages(character);
+            Boolean valid = controlImages(images, requestCharacter);
+            if(valid) return true;
+            if(images != null){
+                for (PostImage element : requestCharacter.getPostImage()){
+                   if(!images.contains(element))imageRepository.delete(element);
+                }
+            }
+            images = obtainImages(requestCharacter);
+            character.setPostImage(images);
+        }
+        return false;
+    }
+
+    private ArrayList<PostImage> obtainImages(Character character){
+        ArrayList<PostImage> images = new ArrayList<PostImage>();
+        for (PostImage element : character.getPostImage()) {
+            Optional<Image> imageRequest = imageRepository.findById(element.getId());
+            if(imageRequest.isPresent()){
+                images.add((PostImage) imageRequest.get());
+            }
+        }
+        return images;
+    }
+
+    private ArrayList<PostImage> getAllImages(Character character){
+        ArrayList<PostImage> images = new ArrayList<PostImage>();
+        for (PostImage element : character.getPostImage()) {
+            Optional<Image> imageRequest = imageRepository.findById(element.getId());
+            if(imageRequest.isPresent()){
+                images.add((PostImage) imageRequest.get());
+            }else{
+                images.add(null);
+            }
+        }
+        if(images.contains(null))images = null;
+        return images;
+    }
+
+    private Boolean controlImages(ArrayList<PostImage> images, 
+                                  Character requestCharacter){
+        int count = 0;
+        if(images == null) return true;
+        for (PostImage element : images) {
+            if(!requestCharacter.getPostImage().contains(element)){
+                count++;
+            }
+        }
+        if(count > 0){
+            for (PostImage element : images) {
+                imageRepository.delete(element);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private ResponseEntity<?> controlNameCharacter(Character character,
+                                                   Character requestCharacter){
+        if(character.getName() != null){
+            String name = character.getName();
+            Optional<Character> objectControlName = characterRepository.findByName(name);
+            if(objectControlName.isPresent()){
+                if(objectControlName.get().getId() != character.getId()){
+                    return new ResponseEntity<>("Exists character with the same name",
+                    HttpStatus.NOT_ACCEPTABLE);
+                }
+            }
+            if(character.getName().replaceAll("\\s+","").isEmpty()){
+                return new ResponseEntity<>("The field name can't be empty",
+                    HttpStatus.NOT_ACCEPTABLE);
+            }
+
+        }else{
+            character.setName(requestCharacter.getName());
+        }
+        return null;
+    }
+
+    private ResponseEntity<?> controlBornDateCharacter(
+                             Character character,
+                             Character requestCharacter){
+        if(character.getBorn_date() == null){
+            character.setBorn_date(requestCharacter.getBorn_date());
+        }else{
+            if(character.getBorn_date() != requestCharacter.getBorn_date()) 
+            return dateBornNotChange;
+        }
+        return null;
     }
 
     private Boolean crearListAppearance(Character character){
@@ -289,8 +416,9 @@ public class CharacterService {
         Optional<Character> characterFound = characterRepository.findById(id);
         if(characterFound.isPresent()){
 
-            //Remove from list of appearances     
-            removeFromListAppearances(characterFound.get());
+            
+           removeFromListAppearances(characterFound.get());
+           removeImages(characterFound.get());
            characterRepository.delete(characterFound.get());
            return new ResponseEntity<>("Succesfully deleted",
            HttpStatus.OK);
@@ -305,6 +433,17 @@ public class CharacterService {
         
         for (Appearance element : characterRequest.getAppearances()) {
             element.getCharacters().remove(characterRequest);    
+        }
+    }
+
+    private void removeImages(Character characterRequest){
+        if(characterRequest.getProfileimage() != null)
+        imageRepository.delete(characterRequest.getProfileimage());
+        
+        if(characterRequest.getPostImage().size() > 0){
+            for (PostImage image : characterRequest.getPostImage()) {
+                imageRepository.delete(image);
+            }
         }
     }
 

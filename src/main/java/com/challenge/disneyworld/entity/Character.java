@@ -157,4 +157,10 @@ public class Character {
         this.postImage = postImage;
     }
 
+    public void addImages(ArrayList<PostImage> postImage) {
+        for (PostImage element : postImage) {
+            this.getPostImage().add(element);
+        }
+    }
+
 }

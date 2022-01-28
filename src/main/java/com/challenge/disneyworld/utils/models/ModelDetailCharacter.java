@@ -9,8 +9,8 @@ public class ModelDetailCharacter {
     private String name;
     private String history;
     private List<ModelAppearance> appearances = new ArrayList<ModelAppearance>();
-   // private String imageProfile;
-   // private List<String> imagesPosts = new ArrayList<String>();
+    private ModelImage imageProfile;
+    private List<ModelImage> imagesPosts = new ArrayList<ModelImage>();
 
     public ModelDetailCharacter() {}
 
@@ -85,31 +85,31 @@ public class ModelDetailCharacter {
     }
 
     /**
-     * @return String return the imageProfile
+     * @return ModelImage return the imageProfile
      */
- /*   public String getImageProfile() {
+    public ModelImage getImageProfile() {
         return imageProfile;
     }
-*/
+
     /**
      * @param imageProfile the imageProfile to set
      */
- /*   public void setImageProfile(String imageProfile) {
+    public void setImageProfile(ModelImage imageProfile) {
         this.imageProfile = imageProfile;
     }
-*/
+
     /**
-     * @return List<String> return the imagesPosts
+     * @return List<ModelImage> return the imagesPosts
      */
-/*    public List<String> getImagesPosts() {
+    public List<ModelImage> getImagesPosts() {
         return imagesPosts;
     }
-*/
+
     /**
      * @param imagesPosts the imagesPosts to set
      */
-/*    public void setImagesPosts(List<String> imagesPosts) {
+    public void setImagesPosts(List<ModelImage> imagesPosts) {
         this.imagesPosts = imagesPosts;
     }
-*/
+
 }

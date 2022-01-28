@@ -2,7 +2,7 @@ package com.challenge.disneyworld.utils.models;
 
 public class ModelListCharacter {
     private String name;
-   // private String imageProfile;
+    private ModelImage imageProfile;
 
     public ModelListCharacter() {}
 
@@ -21,18 +21,17 @@ public class ModelListCharacter {
     }
 
     /**
-     * @return String return the imageProfile
+     * @return ModelImage return the imageProfile
      */
- /*   public String getImageProfile() {
+    public ModelImage getImageProfile() {
         return imageProfile;
     }
-*/
+
     /**
      * @param imageProfile the imageProfile to set
      */
- /*   public void setImageProfile(String imageProfile) {
+    public void setImageProfile(ModelImage imageProfile) {
         this.imageProfile = imageProfile;
     }
-*/
 
 }

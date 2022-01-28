@@ -139,7 +139,6 @@ public class AppearanceService {
             }
 
             if(postImage != null){
-                System.out.println(postImage);
                 appearance.addImages(postImage);
             }
 
