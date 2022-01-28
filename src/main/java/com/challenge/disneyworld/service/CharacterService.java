@@ -480,5 +480,33 @@ public class CharacterService {
             HttpStatus.NOT_FOUND);
         }
     }
+    public ResponseEntity<?> getCharacterByAge(int age){
+
+        ArrayList<Character> characters = 
+        (ArrayList<Character>) characterRepository.findAll();
+                
+        List<Character> characterRequest = characters.stream()
+        .filter(c -> returnAge(c) == age)
+        .collect(Collectors.toList());
+
+        if(characterRequest.size() > 0){
+            BuilderCharacter builder = new BuilderCharacter();
+            ArrayList<ModelListCharacter> requestCharacters = 
+            new ArrayList<ModelListCharacter>();
+
+            for (Character c : characterRequest) {
+                    
+                requestCharacters.add(
+                    builder.setName(c.getName())
+                    .setProfileImage(c.getProfileimage())
+                    .builderListCharacter()
+                );
+            } 
+            return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
+        }else{
+            return new ResponseEntity<>("No exists Characters",
+            HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

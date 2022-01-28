@@ -99,11 +99,19 @@ public class CharacterController {
 
     @Transactional
     @GetMapping
-    public ResponseEntity<?> getCharacterByName(@RequestParam(value="name", required = false) String name){
-        if(name == null){
-            return characterService.getCharacter();
-        }else{
-            return characterService.getCharacterByName(name);
+    public ResponseEntity<?> getCharacterByName(
+        @RequestParam(value="name", required = false) String name,
+        @RequestParam(value="age", required = false) String age){
+        
+        if(name != null) return characterService.getCharacterByName(name);
+        try {
+            if(age != null) 
+            return characterService.getCharacterByAge(Integer.parseInt(age));
+        } catch (Exception e) {
+            return new ResponseEntity<>("The param input is not a number",
+            HttpStatus.NOT_ACCEPTABLE);
         }
+        
+        return characterService.getCharacter();
     }
 }
