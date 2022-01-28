@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,20 +84,26 @@ public class CharacterController {
     public ResponseEntity<?> getCharacterById(@PathVariable(name = "id") Long id){
         return characterService.getCharacterById(id);
     }
-
+/*
     @Transactional
     @GetMapping
     public ResponseEntity<?> getCharacter(){
         return characterService.getCharacter();
     }
-
+*/
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCharacter(@PathVariable(name = "id") Long id){
         return characterService.deleteCharacter(id);
     }
 
-    
-
-    
+    @Transactional
+    @GetMapping
+    public ResponseEntity<?> getCharacterByName(@RequestParam(value="name", required = false) String name){
+        if(name == null){
+            return characterService.getCharacter();
+        }else{
+            return characterService.getCharacterByName(name);
+        }
+    }
 }

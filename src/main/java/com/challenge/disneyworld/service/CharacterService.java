@@ -11,9 +11,10 @@ import com.challenge.disneyworld.utils.models.builders.BuilderCharacter;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-
 
 import com.challenge.disneyworld.entity.Appearance;
 import com.challenge.disneyworld.entity.Character;
@@ -444,6 +445,39 @@ public class CharacterService {
             for (PostImage image : characterRequest.getPostImage()) {
                 imageRepository.delete(image);
             }
+        }
+    }
+
+
+    /*QUERYS*/
+
+    public ResponseEntity<?> getCharacterByName(String name){
+
+        ArrayList<Character> characterByName = 
+        characterRepository.findByNameIgnoreCaseContaining(name.trim());
+                
+        List<Character> characterRequest = characterByName.stream()
+        .filter(c -> c.getName().toUpperCase().trim()
+                     .equals(name.toUpperCase().trim()))
+        .collect(Collectors.toList());
+
+        if(characterRequest.size() > 0){
+            BuilderCharacter builder = new BuilderCharacter();
+            ArrayList<ModelListCharacter> requestCharacters = 
+            new ArrayList<ModelListCharacter>();
+
+            for (Character c : characterRequest) {
+                    
+                requestCharacters.add(
+                    builder.setName(c.getName())
+                    .setProfileImage(c.getProfileimage())
+                    .builderListCharacter()
+                );
+            } 
+            return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
+        }else{
+            return new ResponseEntity<>("No exists Characters",
+            HttpStatus.NOT_FOUND);
         }
     }
 
