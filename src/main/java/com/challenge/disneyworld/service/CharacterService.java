@@ -356,18 +356,14 @@ public class CharacterService {
     }
 
     private Boolean updateListAppearance(Character character, Character characterRequest){
-        System.out.println("La cantidad de elementos a cargar : "+ character.getAppearances().size());
         if(character.getAppearances().size() == 0){
-            System.out.println("Lista vacia");
             for (Appearance element : characterRequest.getAppearances()) {
                 element.getCharacters().remove(characterRequest);
                 appearanceRepository.save(element);
             }
         }else{   
-            System.out.println("Lista no vacia");
             if(characterRequest.getAppearances().size() != 0){
                 //Appearances before update
-                System.out.println("Hay que eliminar");
                 LongStream idAppearances = characterRequest.getAppearances().stream()
                                             .mapToLong(appearance -> appearance.getId());
                 //New appearances
@@ -507,6 +503,34 @@ public class CharacterService {
             return new ResponseEntity<>("No exists Characters",
             HttpStatus.NOT_FOUND);
         }
+    }
+    public ResponseEntity<?> getCharactersByAppearance(Long idAppearance){
+
+        Optional<Appearance> appearances = appearanceRepository.findById(idAppearance);
+        if(appearances.isPresent()){
+            List<Character> characterRequest = appearances.get().getCharacters();
+            if(characterRequest.size() > 0){
+                BuilderCharacter builder = new BuilderCharacter();
+                ArrayList<ModelListCharacter> requestCharacters = 
+                new ArrayList<ModelListCharacter>();
+    
+                for (Character c : characterRequest) {
+                        
+                    requestCharacters.add(
+                        builder.setName(c.getName())
+                        .setProfileImage(c.getProfileimage())
+                        .builderListCharacter()
+                    );
+                } 
+                return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
+            }else{
+                return new ResponseEntity<>("No exists Characters in Movie or serie",
+                HttpStatus.NOT_FOUND);
+            }
+        }else{
+            return new ResponseEntity<>("Appearance not found",
+            HttpStatus.NOT_FOUND);
+        }        
     }
 
 }

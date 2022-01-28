@@ -101,14 +101,24 @@ public class CharacterController {
     @GetMapping
     public ResponseEntity<?> getCharacterByName(
         @RequestParam(value="name", required = false) String name,
-        @RequestParam(value="age", required = false) String age){
+        @RequestParam(value="age", required = false) String age,
+        @RequestParam(value="movies", required = false) String idAppearance){
         
         if(name != null) return characterService.getCharacterByName(name);
+
         try {
             if(age != null) 
             return characterService.getCharacterByAge(Integer.parseInt(age));
         } catch (Exception e) {
             return new ResponseEntity<>("The param input is not a number",
+            HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        try {
+            if(idAppearance != null) 
+            return characterService.getCharactersByAppearance(Long.parseLong(idAppearance));
+        } catch (Exception e) {
+           return new ResponseEntity<>("The param input is not a number",
             HttpStatus.NOT_ACCEPTABLE);
         }
         
