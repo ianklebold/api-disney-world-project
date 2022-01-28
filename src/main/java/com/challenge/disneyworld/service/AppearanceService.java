@@ -273,7 +273,6 @@ public class AppearanceService {
         if(appearance.getGenre() != null){
             Optional<Genre> genere = genreRepository.findById(appearance.getGenre().getId());
             if(genere.isPresent()){
-                System.out.println(genere.get());
                 appearance.setGenre(genere.get());
                 return false;
             }else{

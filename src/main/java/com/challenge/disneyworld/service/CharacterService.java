@@ -67,8 +67,6 @@ public class CharacterService {
     public ResponseEntity<?> createCharacter(ArrayList<PostImage> postImage,
                                              ProfileImage imageCharacter,
                                              Character character){
-        System.out.println(imageCharacter);
-        System.out.println(postImage);
         character.setProfileimage(imageCharacter);
         character.setPostImage(postImage);
         characterRepository.save(character);
@@ -107,57 +105,12 @@ public class CharacterService {
         )? true : false;
     }
 
-    public ResponseEntity<?> getCharacterById(Long id){
-        Optional<Character> character = characterRepository.findById(id);
- 
-        if(character.isPresent()){
-            BuilderCharacter builder = new BuilderCharacter();
- 
-            ModelDetailCharacter characterRequest;
-            System.out.println(character.get().getProfileimage());    
-            characterRequest = builder.setId(character.get().getId())
-                        .setAge(returnAge(character.get()))
-                        .setName(character.get().getName())
-                        .setHistory(character.get().getHistory())
-                        .setAppearances(character.get().getAppearances())
-                        .setProfileImage(character.get().getProfileimage())
-                        .setPostImage(character.get().getPostImage())
-                        .builder();
-            
-            return new ResponseEntity<>(characterRequest, HttpStatus.OK);
-         }else{
-            return new ResponseEntity<>("Character not found",
-            HttpStatus.NOT_FOUND);
-         }
- 
-     }
- 
+
+
+     
     public int returnAge(Character character){
         Period age = Period.between(character.getBorn_date(), LocalDate.now());
         return age.getYears();
-    }
-
-    public ResponseEntity<?> getCharacter(){
-        ArrayList<Character> listCharacters = (ArrayList<Character>) characterRepository.findAll();
-        
-        if(listCharacters.size() > 0){
-            BuilderCharacter builder = new BuilderCharacter();
-            
-            ArrayList<ModelListCharacter> requestCharacters = new ArrayList<ModelListCharacter>();
-
-            for (Character c : listCharacters) {
-                    
-                requestCharacters.add(
-                    builder.setName(c.getName())
-                    .setProfileImage(c.getProfileimage())
-                    .builderListCharacter()
-                );
-            } 
-            return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
-        }else{
-            return new ResponseEntity<>("No exists Characters",
-            HttpStatus.NOT_FOUND);
-        }
     }
 
     public ResponseEntity<?> updateControlCharacter(Character character,Long id){
@@ -348,7 +301,6 @@ public class CharacterService {
         if(listAppearances.contains(null)){
             return true;
         }else{
-            System.out.println(listAppearances);
             character.setAppearances(listAppearances);
             return false;
         }
@@ -375,11 +327,9 @@ public class CharacterService {
                 for (long element : idNewAppearances.toArray()){
                     listIdNewAppearances.add(element);
                 }//[1]  [1,3]
-                System.out.println(listIdNewAppearances);
 
                 for (long element : idAppearances.toArray()){
                     if(!listIdNewAppearances.contains(element)){
-                        System.out.println("Eliminamos : " + element);
                         Optional<Appearance> appearanceRequest = 
                         appearanceRepository.findById(element);
                         appearanceRequest.get().getCharacters().remove(characterRequest);
@@ -390,7 +340,6 @@ public class CharacterService {
             for (Appearance element : character.getAppearances()) {
                 Optional<Appearance> appearanceRequest = 
                 appearanceRepository.findById(element.getId());
-                System.out.println(element.getId() + "Existe");
                 if(!appearanceRequest.isPresent()){
                     return true; //Error exists
                 }
@@ -399,7 +348,6 @@ public class CharacterService {
                 Optional<Appearance> appearanceRequest = 
                 appearanceRepository.findById(element.getId());
                 if(!characterRequest.getAppearances().contains(appearanceRequest.get())){
-                        System.out.println(element.getId() + " No esta, se agrega a la lista");
                         appearanceRequest.get().getCharacters().add(characterRequest);
                         appearanceRepository.save(appearanceRequest.get());                    
                     }
@@ -457,24 +405,7 @@ public class CharacterService {
                      .equals(name.toUpperCase().trim()))
         .collect(Collectors.toList());
 
-        if(characterRequest.size() > 0){
-            BuilderCharacter builder = new BuilderCharacter();
-            ArrayList<ModelListCharacter> requestCharacters = 
-            new ArrayList<ModelListCharacter>();
-
-            for (Character c : characterRequest) {
-                    
-                requestCharacters.add(
-                    builder.setName(c.getName())
-                    .setProfileImage(c.getProfileimage())
-                    .builderListCharacter()
-                );
-            } 
-            return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
-        }else{
-            return new ResponseEntity<>("No exists Characters",
-            HttpStatus.NOT_FOUND);
-        }
+        return returnCharacters(characterRequest);
     }
     public ResponseEntity<?> getCharacterByAge(int age){
 
@@ -485,6 +416,22 @@ public class CharacterService {
         .filter(c -> returnAge(c) == age)
         .collect(Collectors.toList());
 
+        return returnCharacters(characterRequest);
+    }
+
+    public ResponseEntity<?> getCharactersByAppearance(Long idAppearance){
+
+        Optional<Appearance> appearances = appearanceRepository.findById(idAppearance);
+        if(appearances.isPresent()){
+            List<Character> characterRequest = appearances.get().getCharacters();
+            return returnCharacters(characterRequest);
+        }else{
+            return new ResponseEntity<>("Appearance not found",
+            HttpStatus.NOT_FOUND);
+        }        
+    }
+
+    private ResponseEntity<?> returnCharacters(List<Character> characterRequest){
         if(characterRequest.size() > 0){
             BuilderCharacter builder = new BuilderCharacter();
             ArrayList<ModelListCharacter> requestCharacters = 
@@ -504,33 +451,36 @@ public class CharacterService {
             HttpStatus.NOT_FOUND);
         }
     }
-    public ResponseEntity<?> getCharactersByAppearance(Long idAppearance){
 
-        Optional<Appearance> appearances = appearanceRepository.findById(idAppearance);
-        if(appearances.isPresent()){
-            List<Character> characterRequest = appearances.get().getCharacters();
-            if(characterRequest.size() > 0){
-                BuilderCharacter builder = new BuilderCharacter();
-                ArrayList<ModelListCharacter> requestCharacters = 
-                new ArrayList<ModelListCharacter>();
-    
-                for (Character c : characterRequest) {
-                        
-                    requestCharacters.add(
-                        builder.setName(c.getName())
-                        .setProfileImage(c.getProfileimage())
-                        .builderListCharacter()
-                    );
-                } 
-                return new ResponseEntity<>(requestCharacters, HttpStatus.OK);  
-            }else{
-                return new ResponseEntity<>("No exists Characters in Movie or serie",
-                HttpStatus.NOT_FOUND);
-            }
-        }else{
-            return new ResponseEntity<>("Appearance not found",
+    public ResponseEntity<?> getCharacterById(Long id){
+        Optional<Character> character = characterRepository.findById(id);
+ 
+        if(character.isPresent()){
+            BuilderCharacter builder = new BuilderCharacter();
+ 
+            ModelDetailCharacter characterRequest;
+            characterRequest = builder.setId(character.get().getId())
+                        .setAge(returnAge(character.get()))
+                        .setName(character.get().getName())
+                        .setHistory(character.get().getHistory())
+                        .setAppearances(character.get().getAppearances())
+                        .setProfileImage(character.get().getProfileimage())
+                        .setPostImage(character.get().getPostImage())
+                        .builder();
+            
+            return new ResponseEntity<>(characterRequest, HttpStatus.OK);
+         }else{
+            return new ResponseEntity<>("Character not found",
             HttpStatus.NOT_FOUND);
-        }        
+         }
+ 
+     }
+
+
+    public ResponseEntity<?> getCharacter(){
+        ArrayList<Character> listCharacters = (ArrayList<Character>) characterRepository.findAll();
+        
+        return returnCharacters(listCharacters);
     }
 
 }
