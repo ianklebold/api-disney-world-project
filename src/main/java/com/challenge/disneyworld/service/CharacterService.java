@@ -447,9 +447,4 @@ public class CharacterService {
         }
     }
 
-    public ArrayList<Character> getAll(){
-        return (ArrayList<Character>) characterRepository.findAll();
-    }
-  
-
 }

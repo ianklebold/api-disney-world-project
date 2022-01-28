@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/disneyworld/api/v1/appearance")
+@RequestMapping("/api/v1/appearance")
 public class AppearanceController {
 
     @Autowired
@@ -70,12 +70,6 @@ public class AppearanceController {
     public ResponseEntity<?> getMovies(){
         return appearanceService.getMovies();
     }
-    
-    
-    @GetMapping("/all")
-    public ResponseEntity<?> getall(){
-        return appearanceService.getall();
-    }
 
     @Transactional
     @GetMapping("/series")
@@ -89,6 +83,7 @@ public class AppearanceController {
         return appearanceService.getAppearanceById(id);
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAppearance(@PathVariable(name = "id") Long id ){
         return appearanceService.deleteAppearance(id);

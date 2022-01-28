@@ -11,7 +11,6 @@ import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 import com.challenge.disneyworld.utils.models.ModelCharacter;
 import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
-import com.challenge.disneyworld.utils.models.ModelGenre;
 import com.challenge.disneyworld.utils.models.ModelImage;
 import com.challenge.disneyworld.utils.models.ModelListAppearance;
 

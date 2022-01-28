@@ -61,10 +61,6 @@ public class AppearanceService {
     new ResponseEntity<>("One or more characters no exists",
     HttpStatus.NOT_ACCEPTABLE);
 
-    private final ResponseEntity<?> responseCalificationNotAceptable = 
-    new ResponseEntity<>("The range of the calification is 1 to 5",
-    HttpStatus.NOT_ACCEPTABLE);
-
     private final ResponseEntity<?> responseDateNotAceptable = 
     new ResponseEntity<>("The format of date is incorrect. Format : YYYY-MM-dd",
     HttpStatus.NOT_ACCEPTABLE);
@@ -245,11 +241,31 @@ public class AppearanceService {
 
         if(appearanceRequest.isPresent()){
 
+            removeFromListCharacters(appearanceRequest.get());
+            removeImages(appearanceRequest.get());
             appearanceRepository.delete(appearanceRequest.get());
         }else{
             return responseAppearanceNoExists;
         }
         return new ResponseEntity<>("Succesfully deleted", HttpStatus.OK); 
+    }
+
+    private void removeFromListCharacters(Appearance appearanceRequest){
+        
+        for (Character element : appearanceRequest.getCharacters()) {
+            element.getAppearances().remove(appearanceRequest);    
+        }
+    }
+
+    private void removeImages(Appearance appearanceRequest){
+        if(appearanceRequest.getProfileimage() != null)
+        imageRepository.delete(appearanceRequest.getProfileimage());
+        
+        if(appearanceRequest.getPostImage().size() > 0){
+            for (PostImage image : appearanceRequest.getPostImage()) {
+                imageRepository.delete(image);
+            }
+        }
     }
 
 
@@ -300,15 +316,6 @@ public class AppearanceService {
         appearanceRepository.findAllByType(EnumTypeAppearance.MOVIE);
         return (listMovies.size() > 0)?new ResponseEntity<>(constructorSeriesOrMovies(listMovies), HttpStatus.OK):
         new ResponseEntity<>("No exists movies", HttpStatus.NOT_FOUND);
-    }
-
-    //TODO DELETE THIS METHOD
-    
-    public ResponseEntity<?> getall(){
-        ArrayList<Appearance> listMovies = 
-        (ArrayList<Appearance>) appearanceRepository.findAll();
-        return (listMovies.size() > 0)?new ResponseEntity<>(listMovies, HttpStatus.OK):
-        new ResponseEntity<>("No exists appearance", HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<?> getSeries(){

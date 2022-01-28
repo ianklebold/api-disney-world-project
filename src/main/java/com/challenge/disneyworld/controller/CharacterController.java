@@ -20,14 +20,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/disneyworld/api/v1/characters")
+@RequestMapping("/api/v1/characters")
 public class CharacterController {
     @Autowired
     CharacterService characterService;
@@ -90,13 +89,6 @@ public class CharacterController {
     public ResponseEntity<?> getCharacter(){
         return characterService.getCharacter();
     }
-    
-    @Transactional
-    @GetMapping("/all")
-    public ArrayList<Character> getallCharacter(){
-        return characterService.getAll();
-    }
-
 
     @Transactional
     @DeleteMapping("/{id}")
