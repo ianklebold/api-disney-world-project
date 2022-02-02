@@ -384,7 +384,7 @@ public class AppearanceService {
     }
 
     /*Querys*/ 
-    public ResponseEntity<?> getAppearanceByName(String title){
+    public ResponseEntity<?> getAppearanceByNameByMovies(String title){
 
         ArrayList<Appearance> appearanceByName = 
         appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
@@ -400,12 +400,13 @@ public class AppearanceService {
             ,HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getAppearanceByGenre(Long idGenre){
+    public ResponseEntity<?> getAppearanceByGenreByMovies(Long idGenre){
         ArrayList<Appearance> appearances = 
         (ArrayList<Appearance>) appearanceRepository.findAll();
         
         List<Appearance> apperanceRequest = appearances.stream()
         .filter(a -> a.getGenre() != null)
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
         .filter(a -> a.getGenre().getId() == idGenre)
         .collect(Collectors.toList());
 
@@ -414,23 +415,89 @@ public class AppearanceService {
             ,HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getAppearanceOrderByASC(){
-        ArrayList<Appearance> apperanceRequest = 
+    public ResponseEntity<?> getAppearanceOrderByASCByMovies(){
+        ArrayList<Appearance> apperances = 
         appearanceRepository.findAllByOrderByCreationAsc();
+
+        List<Appearance> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .collect(Collectors.toList());
 
         return new ResponseEntity<>(
             constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
             ,HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getAppearanceOrderByDESC(){
-        ArrayList<Appearance> apperanceRequest = 
+    public ResponseEntity<?> getAppearanceOrderByDESCByMovies(){
+        ArrayList<Appearance> apperances = 
         appearanceRepository.findAllByOrderByCreationDesc();
+
+        List<Appearance> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+    
+    public ResponseEntity<?> getAppearanceByNameBySeries(String title){
+
+        ArrayList<Appearance> appearanceByName = 
+        appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
+                
+        List<Appearance> apperanceRequest = appearanceByName.stream()
+        .filter(a -> a.getTitle().toUpperCase().trim()
+                     .equals(title.toUpperCase().trim()))
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceByGenreBySeries(Long idGenre){
+        ArrayList<Appearance> appearances = 
+        (ArrayList<Appearance>) appearanceRepository.findAll();
+        
+        List<Appearance> apperanceRequest = appearances.stream()
+        .filter(a -> a.getGenre() != null)
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .filter(a -> a.getGenre().getId() == idGenre)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByASCBySeries(){
+        ArrayList<Appearance> apperances = 
+        appearanceRepository.findAllByOrderByCreationAsc();
+
+        List<Appearance> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByDESCBySeries(){
+        ArrayList<Appearance> apperances = 
+        appearanceRepository.findAllByOrderByCreationDesc();
+        
+        List<Appearance> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .collect(Collectors.toList());
 
         return new ResponseEntity<>(
             constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
             ,HttpStatus.OK);
     }    
+
 
 
 }
