@@ -70,12 +70,21 @@ public class AppearanceController {
     @GetMapping("/movies")
     public ResponseEntity<?> getMovies(
         @RequestParam(value="name", required = false) String name,
-        @RequestParam(value="genre", required = false) String idGenre
+        @RequestParam(value="genre", required = false) String idGenre,
+        @RequestParam(value="order", required = false) String order
     ){
         if(name != null) return appearanceService.getAppearanceByName(name);
         
         if(idGenre != null) return 
         appearanceService.getAppearanceByGenre(Long.parseLong(idGenre));
+
+        if(order != null){
+            if(order.toUpperCase().equals("ASC")) return 
+            appearanceService.getAppearanceOrderByASC();
+
+            if(order.toUpperCase().equals("DESC")) return 
+            appearanceService.getAppearanceOrderByDESC();
+        }
 
         return appearanceService.getMovies();
     }

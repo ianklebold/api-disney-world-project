@@ -15,4 +15,6 @@ public interface AppearanceRepository extends CrudRepository<Appearance,Long>{
     
     ArrayList<Appearance> findByTitleIgnoreCaseContaining(String title);
     ArrayList<Appearance> findAllByType(EnumTypeAppearance type);
+    ArrayList<Appearance> findAllByOrderByIdAsc();
+    ArrayList<Appearance> findAllByOrderByIdDesc();
 }

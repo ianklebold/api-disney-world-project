@@ -414,5 +414,19 @@ public class AppearanceService {
             ,HttpStatus.OK);
     }
 
+    public ResponseEntity<?> getAppearanceOrderByASC(){
+        ArrayList<Appearance> apperanceRequest = appearanceRepository.findAllByOrderByIdAsc();
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByDESC(){
+        ArrayList<Appearance> apperanceRequest = appearanceRepository.findAllByOrderByIdDesc();
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }    
+
 
 }

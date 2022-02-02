@@ -172,14 +172,16 @@ public class CharacterService {
 
     private void controlProfileImage(Character character,
                                      Character requestCharacter){
-        Optional<Image> imageRequest = imageRepository.findById(
-            character.getProfileimage().getId());
-        if(character.getProfileimage()!= null){
-        if(imageRequest.isPresent())
-            requestCharacter.setProfileimage((ProfileImage) imageRequest.get());
-        }else{
-            imageRepository.delete(imageRequest.get());
-            requestCharacter.setProfileimage(null);
+        if(character.getProfileimage() != null){
+            Optional<Image> imageRequest = imageRepository.findById(
+                character.getProfileimage().getId());
+            if(character.getProfileimage()!= null){
+            if(imageRequest.isPresent())
+                requestCharacter.setProfileimage((ProfileImage) imageRequest.get());
+            }else{
+                imageRepository.delete(imageRequest.get());
+                requestCharacter.setProfileimage(null);
+            }
         }
     }
 
