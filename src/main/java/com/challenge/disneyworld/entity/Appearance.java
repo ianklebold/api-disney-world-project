@@ -37,7 +37,7 @@ public class Appearance {
 
     @NotEmpty
     @Column(name = "creation_date", nullable = false, updatable = true)
-    private LocalDate creation_date;
+    private LocalDate creation;
 
     @NotEmpty
     @Min(value = 1)
@@ -82,7 +82,7 @@ public class Appearance {
             @NotEmpty EnumTypeAppearance type, Genre genre) {
         this.id = id;
         this.title = title;
-        this.creation_date = creation_date;
+        this.creation = creation_date;
         this.calification = calification;
         this.history = history;
         this.type = type;
@@ -125,14 +125,14 @@ public class Appearance {
      * @return LocalDate return the creation_date
      */
     public LocalDate getCreation_date() {
-        return creation_date;
+        return creation;
     }
 
     /**
      * @param creation_date the creation_date to set
      */
     public void setCreation_date(LocalDate creation_date) {
-        this.creation_date = creation_date;
+        this.creation = creation_date;
     }
 
     /**

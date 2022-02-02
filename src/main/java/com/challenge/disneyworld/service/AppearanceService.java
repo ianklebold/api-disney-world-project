@@ -415,14 +415,18 @@ public class AppearanceService {
     }
 
     public ResponseEntity<?> getAppearanceOrderByASC(){
-        ArrayList<Appearance> apperanceRequest = appearanceRepository.findAllByOrderByIdAsc();
+        ArrayList<Appearance> apperanceRequest = 
+        appearanceRepository.findAllByOrderByCreationAsc();
+
         return new ResponseEntity<>(
             constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
             ,HttpStatus.OK);
     }
 
     public ResponseEntity<?> getAppearanceOrderByDESC(){
-        ArrayList<Appearance> apperanceRequest = appearanceRepository.findAllByOrderByIdDesc();
+        ArrayList<Appearance> apperanceRequest = 
+        appearanceRepository.findAllByOrderByCreationDesc();
+
         return new ResponseEntity<>(
             constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
             ,HttpStatus.OK);
