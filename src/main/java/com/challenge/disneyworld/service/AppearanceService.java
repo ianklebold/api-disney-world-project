@@ -1,7 +1,9 @@
 package com.challenge.disneyworld.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.entity.Appearance;
@@ -158,15 +160,17 @@ public class AppearanceService {
 
     private void imageProfile(Appearance appearanceUpdate,
                               Appearance requestAppearance){
-        Optional<Image> imageRequest = imageRepository.findById(
-                        appearanceUpdate.getProfileimage().getId());
         if(appearanceUpdate.getProfileimage() != null){
-            if(imageRequest.isPresent())
-            requestAppearance.setProfileimage((ProfileImage) imageRequest.get());
-        }else{
-            imageRepository.delete(imageRequest.get());
-            requestAppearance.setProfileimage(null);
-        }                         
+            Optional<Image> imageRequest = imageRepository.findById(
+                            appearanceUpdate.getProfileimage().getId());
+            if(appearanceUpdate.getProfileimage() != null){
+                if(imageRequest.isPresent())
+                requestAppearance.setProfileimage((ProfileImage) imageRequest.get());
+            }else{
+                imageRepository.delete(imageRequest.get());
+                requestAppearance.setProfileimage(null);
+            }                         
+        }
     }
 
     private Boolean controlUpdateImages(Appearance appearanceUpdate,
@@ -379,7 +383,36 @@ public class AppearanceService {
            )? true : false;
     }
 
+    /*Querys*/ 
+    public ResponseEntity<?> getAppearanceByName(String title){
 
+        ArrayList<Appearance> appearanceByName = 
+        appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
+                
+        List<Appearance> apperanceRequest = appearanceByName.stream()
+        .filter(a -> a.getTitle().toUpperCase().trim()
+                     .equals(title.toUpperCase().trim()))
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceByGenre(Long idGenre){
+        ArrayList<Appearance> appearances = 
+        (ArrayList<Appearance>) appearanceRepository.findAll();
+        
+        List<Appearance> apperanceRequest = appearances.stream()
+        .filter(a -> a.getGenre() != null)
+        .filter(a -> a.getGenre().getId() == idGenre)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
 
 
 }

@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface AppearanceRepository extends CrudRepository<Appearance,Long>{
     Optional<Appearance> findByTitle(String title);
     
-
+    ArrayList<Appearance> findByTitleIgnoreCaseContaining(String title);
     ArrayList<Appearance> findAllByType(EnumTypeAppearance type);
 }

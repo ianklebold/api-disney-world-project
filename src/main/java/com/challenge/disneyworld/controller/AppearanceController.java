@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,7 +68,15 @@ public class AppearanceController {
 
     @Transactional
     @GetMapping("/movies")
-    public ResponseEntity<?> getMovies(){
+    public ResponseEntity<?> getMovies(
+        @RequestParam(value="name", required = false) String name,
+        @RequestParam(value="genre", required = false) String idGenre
+    ){
+        if(name != null) return appearanceService.getAppearanceByName(name);
+        
+        if(idGenre != null) return 
+        appearanceService.getAppearanceByGenre(Long.parseLong(idGenre));
+
         return appearanceService.getMovies();
     }
 

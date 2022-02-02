@@ -84,13 +84,7 @@ public class CharacterController {
     public ResponseEntity<?> getCharacterById(@PathVariable(name = "id") Long id){
         return characterService.getCharacterById(id);
     }
-/*
-    @Transactional
-    @GetMapping
-    public ResponseEntity<?> getCharacter(){
-        return characterService.getCharacter();
-    }
-*/
+
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCharacter(@PathVariable(name = "id") Long id){
@@ -99,7 +93,7 @@ public class CharacterController {
 
     @Transactional
     @GetMapping
-    public ResponseEntity<?> getCharacterByName(
+    public ResponseEntity<?> getCharacter(
         @RequestParam(value="name", required = false) String name,
         @RequestParam(value="age", required = false) String age,
         @RequestParam(value="movies", required = false) String idAppearance){
