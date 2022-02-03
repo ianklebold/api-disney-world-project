@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "349ef0ce-52e1-4b7b-a71c-2f3a701ad984",
+		"name": "Manual Test Characters",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post Character",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "character",
+							"value": "{\n    \"name\":\"Klebold\",\n    \"born_date\": \"2000-08-10\",\n    \"history\":\"ian klebold\",\n    \"appearances\":[{\"id\":3}]\n}",
+							"contentType": "application/json",
+							"type": "text"
+						},
+						{
+							"key": "profileImage",
+							"type": "file",
+							"src": "/home/administrador/Imágenes/Screenshot from 2022-01-04 09-11-41.png"
+						},
+						{
+							"key": "postImages",
+							"type": "file",
+							"src": "/home/administrador/Imágenes/Screenshot from 2022-01-04 09-11-38.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/characters",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"characters"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Characters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/characters",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "ian",
+							"disabled": true
+						},
+						{
+							"key": "age",
+							"value": "21",
+							"disabled": true
+						},
+						{
+							"key": "movies",
+							"value": "3",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Character",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "character",
+							"value": "{\n  \"history\": \"El fiel aliado de ian klebold\",\n\"appearances\":[{\"id\":2}],\n  \"profileimage\":{\"id\":\"ff67be37-4ec1-412f-ac91-dce670b51cc0\"},\n\"postImage\":[{\"id\":\"85e3f3c7-92c6-4e96-b847-ff8c041aa89e\"}]\n}",
+							"contentType": "application/json",
+							"type": "text"
+						},
+						{
+							"key": "postImages",
+							"type": "file",
+							"src": "/home/administrador/Imágenes/29625-pacman.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/characters/6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"characters",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Character",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/characters/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"characters",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Character",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/characters/8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"characters",
+						"8"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

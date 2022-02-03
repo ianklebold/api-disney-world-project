@@ -1,0 +1,228 @@
+{
+	"info": {
+		"_postman_id": "5e3a6f4b-eda5-4678-be77-5af719bdb36f",
+		"name": "Manual Test Appearances",
+		"description": "Colección que implementa los metodos para probar los endpoints de nuestra API de Disney World. Asegurate de estar levantando el servidor en el puerto que indica cada url, caso contrario deberas cambiarlo.\n\nlocalhost:8080 --> Tu host.\n\nEn cada endpoint se indica como utilizarlo correctamente, por favor lealo con detenimiento.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post Appearance",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "profileImage",
+							"type": "file",
+							"src": "/home/administrador/Imágenes/Screenshot from 2022-01-04 09-11-41.png"
+						},
+						{
+							"key": "postImages",
+							"type": "file",
+							"src": "/home/administrador/Imágenes/29625-pacman.jpg"
+						},
+						{
+							"key": "postImages",
+							"type": "file",
+							"src": "/home/administrador/Imágenes/17017-4k.jpg"
+						},
+						{
+							"key": "appearance",
+							"value": "{\n    \"title\":\"Las aventuras de Ian klebold 4\",\n    \"creation\": \"2022-01-18\",\n    \"calification\":4,\n    \"history\":\"Son las locas aventura de Ian y su alter ego ian klebold\",\n    \"type\":\"MOVIE\",\n    \"characters\":[]\n}",
+							"contentType": "application/json",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appearance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appearance"
+					]
+				},
+				"description": "La creacion de una serie o pelicula, se basa en el envio de un cuerpo en json y un conjunto de archivos (Opcionales) que son la imagen de perfil de la pelicula y un conjunto de imagenes que hacen al post de la pelicula.\n\nPara crear una pelicula o serie deberá ir a la seccion de form-data. Y para cada seccion de archivos y json aplicar los siguientes key y values. \n\n--> Imagen de perfil :\nKey : profileImage \nValue : Seleccionar archivo.\n\n--> Imagenes en post : \nKey : postImages\nValue : Seleccionar archivo. \n\n--> Json : \nKey : appearance\nContent type: application/json\nValue : Campos obligatorios : title, creation (formato YYYY-MM-DD), calification, history, type (MOVIE|SERIE).\n\nCampos opcionales : \n  --> genre : {\"id\":} Solo pasar el id del genero de serie o pelicula \n      existente\n  --> characters : [{\"id\":},{\"id\":}...]. Debemos pasar una lista json junto con objeto/s que contienen solo el id del personaje existente."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Movies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appearance/movies",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appearance",
+						"movies"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Las aventuras de Ian klebold 4",
+							"disabled": true
+						},
+						{
+							"key": "genre",
+							"value": "4",
+							"disabled": true
+						},
+						{
+							"key": "order",
+							"value": "DESC",
+							"disabled": true
+						},
+						{
+							"key": "order",
+							"value": "ASC",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Nos permite obtener todas las peliculas. Si no pasamos ningun Param Request por defecto el servicio nos retorna todas las peliculas sin ningun orden o filtro especifico.\n\nPara indicar algun parametro, ir a la seccion param, podemos encontrar las siguientes key :\n\n--> name : Por nombre de la pelicula.\n--> genre : Indicamos el id del genero de las peliculas que deseamos que se listen.\n--> order : Puede ser ASC (Orden ascendente de id) o DESC (Orden descendente de id)."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Series",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appearance/series",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appearance",
+						"series"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "genre",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "order",
+							"value": "DESC",
+							"disabled": true
+						},
+						{
+							"key": "order",
+							"value": "ASC",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Nos permite obtener todas las series. Si no pasamos ningun Param Request por defecto el servicio nos retorna todas las peliculas sin ningun orden o filtro especifico.\n\nPara indicar algun parametro, ir a la seccion param, podemos encontrar las siguientes key :\n\n--> name : Por nombre de la serie.\n--> genre : Indicamos el id del genero de las series que deseamos que se listen.\n--> order : Puede ser ASC (Orden ascendente de id) o DESC (Orden descendente de id)."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Appearance by Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appearance/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appearance",
+						"3"
+					]
+				},
+				"description": "Nos permite obtener una sola pelicula o serie indicando el ID del mismo en el endpoint o url.\n\nhttp://localhost:8080/api/v1/appearance/ {Aqui indique el id}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Appearance",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "appearance",
+							"value": "{\n\"genre\":{\"id\":\"4\"},\n\"characters\":[{\n           \"id\":\"8\"}]\n}",
+							"contentType": "application/json",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appearance/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appearance",
+						"3"
+					]
+				},
+				"description": "Nos permitirá actualizar una pelicula o serie. Para ello es importante indicar el id en la url o endpoint.\n\nhttp://localhost:8080/api/v1/appearance/ {Aqui indique el id}\n\nPara conservar las imagenes y personajes que estan cargadas en la pelicula. Debemos de indicarlas en el cuerpo del JSON.\n\n--> \"characters\":[{ \"id\":}] Indicar los ids de los personajes\n--> profileImage {\"id\":} Indicar el id de la imagen de perfil\n\n\n--> Imagenes en post : \nKey : postImages"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Appearance",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appearance/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appearance",
+						"2"
+					]
+				},
+				"description": "Nos permite eliminar una pelicula o serie indicando el ID del mismo en el endpoint o url.\n\nhttp://localhost:8080/api/v1/appearance/ {Aqui indique el id}"
+			},
+			"response": []
+		}
+	]
+}
