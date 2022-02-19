@@ -3,7 +3,6 @@ package com.challenge.disneyworld.controller;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import javax.transaction.Transactional;
 
 import com.challenge.disneyworld.entity.Film;
 import com.challenge.disneyworld.entity.PostImage;
@@ -47,10 +46,13 @@ public class FilmController {
         ProfileImage profileImage = new ProfileImage();
         profileImage = fileUploadService.uploadImageProfileToDB(image);
         
-        return appearanceService.createAppearance(appearance,postImages,profileImage);
+        ResponseEntity<?> response = 
+        appearanceService.createAppearance(appearance,postImages,profileImage);    
+        
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+
     }
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAppearance(
         @PathVariable(name = "id") Long id,
@@ -63,65 +65,91 @@ public class FilmController {
         ProfileImage profileImage = new ProfileImage();
         profileImage = fileUploadService.uploadImageProfileToDB(image);
 
-        return appearanceService.updateAppearance(appearance, id,postImages,profileImage);
+        ResponseEntity<?> response = 
+        appearanceService.updateAppearance(appearance, id,postImages,profileImage);        
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
-    @Transactional
     @GetMapping("/movies")
     public ResponseEntity<?> getMovies(
         @RequestParam(value="name", required = false) String name,
         @RequestParam(value="genre", required = false) String idGenre,
         @RequestParam(value="order", required = false) String order
     ){
-        if(name != null) return appearanceService.getAppearanceByNameByMovies(name);
+        ResponseEntity<?> response;
+
+        if(name != null){
+            response = appearanceService.getAppearanceByNameByMovies(name);
+            return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+        }  
         
-        if(idGenre != null) return 
-        appearanceService.getAppearanceByGenreByMovies(Long.parseLong(idGenre));
-
-        if(order != null){
-            if(order.toUpperCase().equals("ASC")) return 
-            appearanceService.getAppearanceOrderByASCByMovies();
-
-            if(order.toUpperCase().equals("DESC")) return 
-            appearanceService.getAppearanceOrderByDESCByMovies();
+        if(idGenre != null){
+            response = 
+            appearanceService.getAppearanceByGenreByMovies(Long.parseLong(idGenre));
+            return new ResponseEntity<>(response.getBody(),response.getStatusCode());
         }
-
-        return appearanceService.getMovies();
+        
+        if(order != null){
+            if(order.toUpperCase().equals("ASC")){
+                response = appearanceService.getAppearanceOrderByASCByMovies();
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            }  
+            
+            if(order.toUpperCase().equals("DESC")){
+                response = appearanceService.getAppearanceOrderByDESCByMovies();
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            }  
+            
+        }
+        response = appearanceService.getMovies();
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
-    @Transactional
     @GetMapping("/series")
     public ResponseEntity<?> getSeries(
         @RequestParam(value="name", required = false) String name,
         @RequestParam(value="genre", required = false) String idGenre,
         @RequestParam(value="order", required = false) String order
     ){
-        if(name != null) return appearanceService.getAppearanceByNameBySeries(name);
+        ResponseEntity<?> response;
+
+        if(name != null){
+            response = appearanceService.getAppearanceByNameBySeries(name);
+            return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+        }  
         
-        if(idGenre != null) return 
-        appearanceService.getAppearanceByGenreBySeries(Long.parseLong(idGenre));
-
-        if(order != null){
-            if(order.toUpperCase().equals("ASC")) return 
-            appearanceService.getAppearanceOrderByASCBySeries();
-
-            if(order.toUpperCase().equals("DESC")) return 
-            appearanceService.getAppearanceOrderByDESCBySeries();
+        if(idGenre != null){
+            response = 
+            appearanceService.getAppearanceByGenreBySeries(Long.parseLong(idGenre));
+            return new ResponseEntity<>(response.getBody(),response.getStatusCode());
         }
-
-        return appearanceService.getSeries();
+        
+        if(order != null){
+            if(order.toUpperCase().equals("ASC")){
+                response = appearanceService.getAppearanceOrderByASCBySeries();
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            }  
+            
+            if(order.toUpperCase().equals("DESC")){
+                response = appearanceService.getAppearanceOrderByDESCBySeries();
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            }  
+            
+        }
+        response = appearanceService.getSeries();
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
-    @Transactional
     @GetMapping("/{id}")
     public ResponseEntity<?> getAppearanceById(@PathVariable(name = "id") Long id){
-        return appearanceService.getAppearanceById(id);
+        ResponseEntity<?> response = appearanceService.getAppearanceById(id);
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAppearance(@PathVariable(name = "id") Long id ){
-        return appearanceService.deleteAppearance(id);
+        ResponseEntity<?> response = appearanceService.deleteAppearance(id);
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
 

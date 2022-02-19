@@ -3,6 +3,8 @@ package com.challenge.disneyworld.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import com.challenge.disneyworld.dto.ModelCrudGenre;
 import com.challenge.disneyworld.dto.ModelDetailGenre;
 import com.challenge.disneyworld.dto.builders.BuilderGenre;
@@ -123,6 +125,7 @@ public class GenreServiceImpl implements GenreService{
     }
 
     /*Querys*/ 
+    @Transactional
     public ResponseEntity<?> findAllGenres(){
         ArrayList<Genre> lGenres = (ArrayList<Genre>) genreRepository.findAll();
 
@@ -147,6 +150,7 @@ public class GenreServiceImpl implements GenreService{
         }
     }
 
+    @Transactional
     public  ResponseEntity<?> findGenreById(Long id){
         Optional<Genre> genreRequest = genreRepository.findById(id);
 

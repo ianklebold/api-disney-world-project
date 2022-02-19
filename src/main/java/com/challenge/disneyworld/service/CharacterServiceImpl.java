@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import javax.transaction.Transactional;
+
 import com.challenge.disneyworld.entity.Film;
 import com.challenge.disneyworld.dto.ModelDetailCharacter;
 import com.challenge.disneyworld.dto.ModelListCharacter;
@@ -65,6 +67,7 @@ public class CharacterServiceImpl implements CharacterService{
     new ResponseEntity<>("The images uploaded not exist.",
     HttpStatus.NOT_ACCEPTABLE);
 
+    @Transactional
     public ResponseEntity<?> createCharacter(ArrayList<PostImage> postImage,
                                              ProfileImage imageCharacter,
                                              Character character){
@@ -143,6 +146,7 @@ public class CharacterServiceImpl implements CharacterService{
         }
     }
 
+    @Transactional
     public ResponseEntity<?>  updateCharacter(
         ArrayList<PostImage> postImage,
         ProfileImage imageCharacter,
@@ -357,9 +361,9 @@ public class CharacterServiceImpl implements CharacterService{
                 }
             }
             return false;
-        }
+    }
 
-
+    @Transactional
     public ResponseEntity<?> deleteCharacter(Long id){
         Optional<Character> characterFound = characterRepository.findById(id);
         if(characterFound.isPresent()){
@@ -455,6 +459,7 @@ public class CharacterServiceImpl implements CharacterService{
         }
     }
 
+    @Transactional
     public ResponseEntity<?> getCharacterById(Long id){
         Optional<Character> character = characterRepository.findById(id);
  
@@ -477,9 +482,9 @@ public class CharacterServiceImpl implements CharacterService{
             HttpStatus.NOT_FOUND);
          }
  
-     }
+    }
 
-
+    @Transactional
     public ResponseEntity<?> getCharacter(){
         ArrayList<Character> listCharacters = (ArrayList<Character>) characterRepository.findAll();
         

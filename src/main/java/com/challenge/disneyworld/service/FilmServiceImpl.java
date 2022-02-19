@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import com.challenge.disneyworld.utils.helpers.Helpers;
 import com.challenge.disneyworld.entity.Film;
 import com.challenge.disneyworld.dto.ModelDetailAppearance;
@@ -99,6 +101,7 @@ public class FilmServiceImpl implements FilmService{
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<?> updateAppearance(Film appearance,Long id,
                                               ArrayList<PostImage> postImage,
                                               ProfileImage image){
@@ -241,6 +244,7 @@ public class FilmServiceImpl implements FilmService{
         return images;
     }
 
+    @Transactional
     public ResponseEntity<?> deleteAppearance(Long id){
         Optional<Film> appearanceRequest = appearanceRepository.findById(id);
 
@@ -461,6 +465,7 @@ public class FilmServiceImpl implements FilmService{
             ,HttpStatus.OK);
     }
     
+    @Transactional
     public ResponseEntity<?> getMovies(){
         ArrayList<Film> listMovies = 
         appearanceRepository.findAllByType(EnumTypeAppearance.MOVIE);
@@ -468,12 +473,14 @@ public class FilmServiceImpl implements FilmService{
         new ResponseEntity<>("No exists movies", HttpStatus.NOT_FOUND);
     }
 
+    @Transactional
     public ResponseEntity<?> getSeries(){
         ArrayList<Film> listSeries = 
         appearanceRepository.findAllByType(EnumTypeAppearance.SERIE);
         return new ResponseEntity<>(constructorSeriesOrMovies(listSeries), HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<?> getAppearanceById(Long id){
         Optional<Film> appearances = appearanceRepository.findById(id);
         ModelDetailAppearance requestAppearance = new ModelDetailAppearance();

@@ -6,8 +6,6 @@ import com.challenge.disneyworld.service.FileUploadService;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import javax.transaction.Transactional;
-
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
@@ -35,7 +33,6 @@ public class CharacterController {
     @Autowired
     FileUploadService fileUploadService;
 
-    @Transactional
     @PostMapping()
     public ResponseEntity<?> createCharacter(
         @RequestPart(value="profileImage",required=false) MultipartFile image,
@@ -51,11 +48,14 @@ public class CharacterController {
         postImages = fileUploadService.uploadImagePostToDB(postImage);
         ProfileImage profileImage = new ProfileImage();
         profileImage = fileUploadService.uploadImageProfileToDB(image);
-        return characterService.createCharacter(postImages,profileImage,character);
+
+        ResponseEntity<?> response = 
+        characterService.createCharacter(postImages,profileImage,character);    
+
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
         
     } 
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCharacter(
         @PathVariable(name = "id") Long id,
@@ -71,51 +71,59 @@ public class CharacterController {
             postImages = fileUploadService.uploadImagePostToDB(postImage);
             ProfileImage profileImage = new ProfileImage();
             profileImage = fileUploadService.uploadImageProfileToDB(image);
-            return characterService.updateCharacter(postImages,profileImage,character);
+            ResponseEntity<?> response = 
+            characterService.updateCharacter(postImages,profileImage,character);
+
+            return new ResponseEntity<>(response.getBody(),response.getStatusCode());
         } catch (Exception e) {
-            return new ResponseEntity<>("Character can't updated",
-            HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>("Ups Something was wrong.",
+            HttpStatus.CONFLICT);
         }
         
     }
 
-    @Transactional
     @GetMapping("/{id}")
     public ResponseEntity<?> getCharacterById(@PathVariable(name = "id") Long id){
-        return characterService.getCharacterById(id);
+        ResponseEntity<?> response = 
+        characterService.getCharacterById(id);
+
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCharacter(@PathVariable(name = "id") Long id){
-        return characterService.deleteCharacter(id);
+        ResponseEntity<?> response = characterService.deleteCharacter(id);
+
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
-    @Transactional
     @GetMapping
     public ResponseEntity<?> getCharacter(
         @RequestParam(value="name", required = false) String name,
         @RequestParam(value="age", required = false) String age,
         @RequestParam(value="movies", required = false) String idAppearance){
+        ResponseEntity<?> response;
         
-        if(name != null) return characterService.getCharacterByName(name);
-
         try {
-            if(age != null) 
-            return characterService.getCharacterByAge(Integer.parseInt(age));
+            if(name != null){
+                response = characterService.getCharacterByName(name);
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+    
+            } 
+            if(age != null){
+                response = characterService.getCharacterByAge(Integer.parseInt(age));
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            } 
+            if(idAppearance != null){
+                response = characterService.
+                getCharactersByAppearance(Long.parseLong(idAppearance));
+                return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            }
         } catch (Exception e) {
             return new ResponseEntity<>("The param input is not a number",
             HttpStatus.NOT_ACCEPTABLE);
         }
-
-        try {
-            if(idAppearance != null) 
-            return characterService.getCharactersByAppearance(Long.parseLong(idAppearance));
-        } catch (Exception e) {
-           return new ResponseEntity<>("The param input is not a number",
-            HttpStatus.NOT_ACCEPTABLE);
-        }
-        
-        return characterService.getCharacter();
+        response = characterService.getCharacter();
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 }

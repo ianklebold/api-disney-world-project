@@ -2,8 +2,6 @@ package com.challenge.disneyworld.controller;
 
 import java.net.URISyntaxException;
 
-import javax.transaction.Transactional;
-
 import com.challenge.disneyworld.dto.ModelCrudGenre;
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.service.FileUploadService;
@@ -37,35 +35,39 @@ public class GenreController {
         @RequestPart(value="genre", required=true) ModelCrudGenre genreCrud)
         throws URISyntaxException{
         
-        ProfileImage profileImage = fileUploadService.uploadImageProfileToDB(image);   
-        return genreService.createGenre(genreCrud,profileImage);
+        ProfileImage profileImage = fileUploadService.uploadImageProfileToDB(image);
+        
+        ResponseEntity<?> response = genreService.createGenre(genreCrud,profileImage);
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateGenre(@RequestBody ModelCrudGenre genreCrud,
                                          @PathVariable(name = "id") Long id){
         
-        return genreService.updateGenre(genreCrud, id);
+        ResponseEntity<?> response = genreService.updateGenre(genreCrud, id);
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteGenre(@PathVariable(name = "id") Long id){
         
-        return genreService.deleteGenre(id);
+        ResponseEntity<?> response = genreService.deleteGenre(id);
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
-
-    @Transactional
+    
     @GetMapping("/all")
     public ResponseEntity<?> findAllGenres(){
         
-        return genreService.findAllGenres();
+        ResponseEntity<?> response = genreService.findAllGenres();
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
     
-    @Transactional
     @GetMapping("/{id}")
     public ResponseEntity<?> findGenreById(@PathVariable(name = "id") Long id){
         
-        return genreService.findGenreById(id);
+        ResponseEntity<?> response = genreService.findGenreById(id);
+        return new ResponseEntity<>(response.getBody(),response.getStatusCode());
     }
 
     
