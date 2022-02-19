@@ -4,10 +4,10 @@ import java.net.URISyntaxException;
 
 import javax.transaction.Transactional;
 
+import com.challenge.disneyworld.dto.ModelCrudGenre;
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.service.FileUploadService;
-import com.challenge.disneyworld.service.GenreService;
-import com.challenge.disneyworld.utils.models.ModelCrudGenre;
+import com.challenge.disneyworld.service.GenreServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/genres")
 public class GenreController {
     @Autowired
-    GenreService genreService;
+    GenreServiceImpl genreService;
     
     @Autowired
     FileUploadService fileUploadService;

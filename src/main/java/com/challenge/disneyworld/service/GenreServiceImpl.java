@@ -3,13 +3,14 @@ package com.challenge.disneyworld.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.challenge.disneyworld.dto.ModelCrudGenre;
+import com.challenge.disneyworld.dto.ModelDetailGenre;
+import com.challenge.disneyworld.dto.builders.BuilderGenre;
 import com.challenge.disneyworld.entity.Genre;
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.repository.GenreRepository;
+import com.challenge.disneyworld.service.interfaces.GenreService;
 import com.challenge.disneyworld.utils.helpers.Helpers;
-import com.challenge.disneyworld.utils.models.ModelCrudGenre;
-import com.challenge.disneyworld.utils.models.ModelDetailGenre;
-import com.challenge.disneyworld.utils.models.builders.BuilderGenre;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class GenreService {
+public class GenreServiceImpl implements GenreService{
     @Autowired
     GenreRepository genreRepository;
     
@@ -108,6 +109,20 @@ public class GenreService {
         }
     }
 
+
+
+    private Boolean controlEmptyField(String name){
+        return (
+            name == null || name.replaceAll("\\s+","").isEmpty()
+        )? true : false;
+    }
+
+    private Boolean controlUniqueName(String name){
+        Optional<Genre> genreRequest = genreRepository.findByName(name);
+        return (genreRequest.isPresent())?true:false;
+    }
+
+    /*Querys*/ 
     public ResponseEntity<?> findAllGenres(){
         ArrayList<Genre> lGenres = (ArrayList<Genre>) genreRepository.findAll();
 
@@ -130,17 +145,6 @@ public class GenreService {
             return new ResponseEntity<>("No exists Genrs",
             HttpStatus.NOT_FOUND);
         }
-    }
-
-    private Boolean controlEmptyField(String name){
-        return (
-            name == null || name.replaceAll("\\s+","").isEmpty()
-        )? true : false;
-    }
-
-    private Boolean controlUniqueName(String name){
-        Optional<Genre> genreRequest = genreRepository.findByName(name);
-        return (genreRequest.isPresent())?true:false;
     }
 
     public  ResponseEntity<?> findGenreById(Long id){

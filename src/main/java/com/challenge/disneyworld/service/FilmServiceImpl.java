@@ -6,21 +6,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.challenge.disneyworld.utils.helpers.Helpers;
-import com.challenge.disneyworld.entity.Appearance;
+import com.challenge.disneyworld.entity.Film;
+import com.challenge.disneyworld.dto.ModelDetailAppearance;
+import com.challenge.disneyworld.dto.ModelListAppearance;
+import com.challenge.disneyworld.dto.builders.BuilderAppearance;
+import com.challenge.disneyworld.dto.builders.BuilderDetailAppearances;
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.Genre;
 import com.challenge.disneyworld.entity.Image;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
-import com.challenge.disneyworld.repository.AppearanceRepository;
+import com.challenge.disneyworld.repository.FilmRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
 import com.challenge.disneyworld.repository.GenreRepository;
 import com.challenge.disneyworld.repository.ImageRepository;
+import com.challenge.disneyworld.service.interfaces.FilmService;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
-import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
-import com.challenge.disneyworld.utils.models.ModelListAppearance;
-import com.challenge.disneyworld.utils.models.builders.BuilderAppearance;
-import com.challenge.disneyworld.utils.models.builders.BuilderDetailAppearances;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,15 +29,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AppearanceService {
+public class FilmServiceImpl implements FilmService{
 
-    AppearanceRepository appearanceRepository;
+    FilmRepository appearanceRepository;
     CharacterRepository characterRepository;
     GenreRepository genreRepository;
     ImageRepository imageRepository;
 
     @Autowired
-    public AppearanceService(AppearanceRepository appearanceRepository,
+    public FilmServiceImpl(FilmRepository appearanceRepository,
                              CharacterRepository characterRepository,
                              GenreRepository genreRepository,
                              ImageRepository imageRepository){
@@ -75,7 +76,7 @@ public class AppearanceService {
     new ResponseEntity<>("The genre not exists",
     HttpStatus.NOT_FOUND);
 
-    public ResponseEntity<?> createAppearance(Appearance appearance,
+    public ResponseEntity<?> createAppearance(Film appearance,
                                               ArrayList<PostImage> postImage,
                                               ProfileImage image){
         if(controlEmptyFields(appearance)) return responseFieldsEmpty;
@@ -98,10 +99,10 @@ public class AppearanceService {
         return new ResponseEntity<>("Succesfully created", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updateAppearance(Appearance appearance,Long id,
+    public ResponseEntity<?> updateAppearance(Film appearance,Long id,
                                               ArrayList<PostImage> postImage,
                                               ProfileImage image){
-        Appearance requestAppearance = appearanceRepository.findById(id).get();
+        Film requestAppearance = appearanceRepository.findById(id).get();
         if(requestAppearance != null){
             appearance.setId(id);
             if(appearance.getTitle() != null){
@@ -158,8 +159,8 @@ public class AppearanceService {
         }
     }
 
-    private void imageProfile(Appearance appearanceUpdate,
-                              Appearance requestAppearance){
+    private void imageProfile(Film appearanceUpdate,
+                              Film requestAppearance){
         if(appearanceUpdate.getProfileimage() != null){
             Optional<Image> imageRequest = imageRepository.findById(
                             appearanceUpdate.getProfileimage().getId());
@@ -173,8 +174,8 @@ public class AppearanceService {
         }
     }
 
-    private Boolean controlUpdateImages(Appearance appearanceUpdate,
-                                        Appearance requestAppearance){
+    private Boolean controlUpdateImages(Film appearanceUpdate,
+    Film requestAppearance){
 
         if(appearanceUpdate.getPostImage().size() == 0 || 
            appearanceUpdate.getPostImage() == null){
@@ -198,7 +199,7 @@ public class AppearanceService {
     }
 
     private Boolean controlImages(ArrayList<PostImage> images, 
-                            Appearance requestAppearance){
+                                  Film requestAppearance){
         int count = 0;
         if(images == null) return true;
         for (PostImage element : images) {
@@ -215,7 +216,7 @@ public class AppearanceService {
         return false;
     }
 
-    private ArrayList<PostImage> obtainImages(Appearance apperanceUpdate){
+    private ArrayList<PostImage> obtainImages(Film apperanceUpdate){
         ArrayList<PostImage> images = new ArrayList<PostImage>();
         for (PostImage element : apperanceUpdate.getPostImage()) {
             Optional<Image> imageRequest = imageRepository.findById(element.getId());
@@ -226,7 +227,7 @@ public class AppearanceService {
         return images;
     }
 
-    private ArrayList<PostImage> getAllImages(Appearance apperanceUpdate){
+    private ArrayList<PostImage> getAllImages(Film apperanceUpdate){
         ArrayList<PostImage> images = new ArrayList<PostImage>();
         for (PostImage element : apperanceUpdate.getPostImage()) {
             Optional<Image> imageRequest = imageRepository.findById(element.getId());
@@ -241,7 +242,7 @@ public class AppearanceService {
     }
 
     public ResponseEntity<?> deleteAppearance(Long id){
-        Optional<Appearance> appearanceRequest = appearanceRepository.findById(id);
+        Optional<Film> appearanceRequest = appearanceRepository.findById(id);
 
         if(appearanceRequest.isPresent()){
 
@@ -254,14 +255,14 @@ public class AppearanceService {
         return new ResponseEntity<>("Succesfully deleted", HttpStatus.OK); 
     }
 
-    private void removeFromListCharacters(Appearance appearanceRequest){
+    private void removeFromListCharacters(Film appearanceRequest){
         
         for (Character element : appearanceRequest.getCharacters()) {
             element.getAppearances().remove(appearanceRequest);    
         }
     }
 
-    private void removeImages(Appearance appearanceRequest){
+    private void removeImages(Film appearanceRequest){
         if(appearanceRequest.getProfileimage() != null)
         imageRepository.delete(appearanceRequest.getProfileimage());
         
@@ -273,7 +274,7 @@ public class AppearanceService {
     }
 
 
-    private Boolean controlGenre(Appearance appearance){
+    private Boolean controlGenre(Film appearance){
         if(appearance.getGenre() != null){
             Optional<Genre> genere = genreRepository.findById(appearance.getGenre().getId());
             if(genere.isPresent()){
@@ -287,14 +288,14 @@ public class AppearanceService {
         }
     }
 
-    private void controlCalification(Appearance appearance, int califRequest){
+    private void controlCalification(Film appearance, int califRequest){
 
         if(appearance.getCalification() < 1 || appearance.getCalification() > 5){
             appearance.setCalification(califRequest);
         }
     }
 
-    private Boolean controlCharacters(Appearance appearance){
+    private Boolean controlCharacters(Film appearance){
         ArrayList<Character> listaCharacters = new ArrayList<Character>();
         for (Character character : appearance.getCharacters()) {
             Optional<Character> characterRequest = 
@@ -314,21 +315,167 @@ public class AppearanceService {
         }
     } 
 
+    private ArrayList<ModelListAppearance> constructorSeriesOrMovies(ArrayList<Film> lAppearances){
+        BuilderAppearance builder = new BuilderAppearance();
+        ArrayList<ModelListAppearance> requestAppearance = new ArrayList<ModelListAppearance>();
+
+        for (Film movie : lAppearances) {
+            requestAppearance.add(
+                builder.setTitle(movie.getTitle()) 
+                       .setCreation_Date(movie.getCreation_date())
+                       .setImage(movie.getProfileimage())
+                       .modelListAppearance()
+            );
+        }
+        return requestAppearance;
+    }
+
+    private Boolean controlTitleUnique(Film appearance){
+        Optional<Film> objectControlTitle = 
+        appearanceRepository.findByTitle(appearance.getTitle());
+        return (objectControlTitle.isPresent())?true:false;
+    }
+
+    private Boolean controlEmptyFields(Film appearance) {
+        return (
+           appearance.getTitle() == null ||
+           appearance.getTitle().trim().isEmpty() || 
+           appearance.getCreation_date() == null || 
+           appearance.getHistory() == null || appearance.getHistory().trim().isEmpty() ||
+           appearance.getType() == null
+           )? true : false;
+    }
+
+    /*Querys*/ 
+    public ResponseEntity<?> getAppearanceByNameByMovies(String title){
+
+        ArrayList<Film> appearanceByName = 
+        appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
+                
+        List<Film> apperanceRequest = appearanceByName.stream()
+        .filter(a -> a.getTitle().toUpperCase().trim()
+                     .equals(title.toUpperCase().trim()))
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceByGenreByMovies(Long idGenre){
+        ArrayList<Film> appearances = 
+        (ArrayList<Film>) appearanceRepository.findAll();
+        
+        List<Film> apperanceRequest = appearances.stream()
+        .filter(a -> a.getGenre() != null)
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .filter(a -> a.getGenre().getId() == idGenre)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByASCByMovies(){
+        ArrayList<Film> apperances = 
+        appearanceRepository.findAllByOrderByCreationAsc();
+
+        List<Film> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByDESCByMovies(){
+        ArrayList<Film> apperances = 
+        appearanceRepository.findAllByOrderByCreationDesc();
+
+        List<Film> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+    
+    public ResponseEntity<?> getAppearanceByNameBySeries(String title){
+
+        ArrayList<Film> appearanceByName = 
+        appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
+                
+        List<Film> apperanceRequest = appearanceByName.stream()
+        .filter(a -> a.getTitle().toUpperCase().trim()
+                     .equals(title.toUpperCase().trim()))
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceByGenreBySeries(Long idGenre){
+        ArrayList<Film> appearances = 
+        (ArrayList<Film>) appearanceRepository.findAll();
+        
+        List<Film> apperanceRequest = appearances.stream()
+        .filter(a -> a.getGenre() != null)
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .filter(a -> a.getGenre().getId() == idGenre)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByASCBySeries(){
+        ArrayList<Film> apperances = 
+        appearanceRepository.findAllByOrderByCreationAsc();
+
+        List<Film> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAppearanceOrderByDESCBySeries(){
+        ArrayList<Film> apperances = 
+        appearanceRepository.findAllByOrderByCreationDesc();
+        
+        List<Film> apperanceRequest = apperances.stream()
+        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
+        .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            constructorSeriesOrMovies((ArrayList<Film>) apperanceRequest)
+            ,HttpStatus.OK);
+    }
+    
     public ResponseEntity<?> getMovies(){
-        ArrayList<Appearance> listMovies = 
+        ArrayList<Film> listMovies = 
         appearanceRepository.findAllByType(EnumTypeAppearance.MOVIE);
         return (listMovies.size() > 0)?new ResponseEntity<>(constructorSeriesOrMovies(listMovies), HttpStatus.OK):
         new ResponseEntity<>("No exists movies", HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<?> getSeries(){
-        ArrayList<Appearance> listSeries = 
+        ArrayList<Film> listSeries = 
         appearanceRepository.findAllByType(EnumTypeAppearance.SERIE);
         return new ResponseEntity<>(constructorSeriesOrMovies(listSeries), HttpStatus.OK);
     }
 
     public ResponseEntity<?> getAppearanceById(Long id){
-        Optional<Appearance> appearances = appearanceRepository.findById(id);
+        Optional<Film> appearances = appearanceRepository.findById(id);
         ModelDetailAppearance requestAppearance = new ModelDetailAppearance();
         
         BuilderDetailAppearances builder = new BuilderDetailAppearances();
@@ -350,153 +497,6 @@ public class AppearanceService {
         return responseAppearanceNoExists;
         }
     }
-
-    
-    private ArrayList<ModelListAppearance> constructorSeriesOrMovies(ArrayList<Appearance> lAppearances){
-        BuilderAppearance builder = new BuilderAppearance();
-        ArrayList<ModelListAppearance> requestAppearance = new ArrayList<ModelListAppearance>();
-
-        for (Appearance movie : lAppearances) {
-            requestAppearance.add(
-                builder.setTitle(movie.getTitle()) 
-                       .setCreation_Date(movie.getCreation_date())
-                       .setImage(movie.getProfileimage())
-                       .modelListAppearance()
-            );
-        }
-        return requestAppearance;
-    }
-
-    private Boolean controlTitleUnique(Appearance appearance){
-        Optional<Appearance> objectControlTitle = 
-        appearanceRepository.findByTitle(appearance.getTitle());
-        return (objectControlTitle.isPresent())?true:false;
-    }
-
-    private Boolean controlEmptyFields(Appearance appearance) {
-        return (
-           appearance.getTitle() == null ||
-           appearance.getTitle().trim().isEmpty() || 
-           appearance.getCreation_date() == null || 
-           appearance.getHistory() == null || appearance.getHistory().trim().isEmpty() ||
-           appearance.getType() == null
-           )? true : false;
-    }
-
-    /*Querys*/ 
-    public ResponseEntity<?> getAppearanceByNameByMovies(String title){
-
-        ArrayList<Appearance> appearanceByName = 
-        appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
-                
-        List<Appearance> apperanceRequest = appearanceByName.stream()
-        .filter(a -> a.getTitle().toUpperCase().trim()
-                     .equals(title.toUpperCase().trim()))
-        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getAppearanceByGenreByMovies(Long idGenre){
-        ArrayList<Appearance> appearances = 
-        (ArrayList<Appearance>) appearanceRepository.findAll();
-        
-        List<Appearance> apperanceRequest = appearances.stream()
-        .filter(a -> a.getGenre() != null)
-        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
-        .filter(a -> a.getGenre().getId() == idGenre)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getAppearanceOrderByASCByMovies(){
-        ArrayList<Appearance> apperances = 
-        appearanceRepository.findAllByOrderByCreationAsc();
-
-        List<Appearance> apperanceRequest = apperances.stream()
-        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getAppearanceOrderByDESCByMovies(){
-        ArrayList<Appearance> apperances = 
-        appearanceRepository.findAllByOrderByCreationDesc();
-
-        List<Appearance> apperanceRequest = apperances.stream()
-        .filter(a -> a.getType() == EnumTypeAppearance.MOVIE)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-    
-    public ResponseEntity<?> getAppearanceByNameBySeries(String title){
-
-        ArrayList<Appearance> appearanceByName = 
-        appearanceRepository.findByTitleIgnoreCaseContaining(title.trim());
-                
-        List<Appearance> apperanceRequest = appearanceByName.stream()
-        .filter(a -> a.getTitle().toUpperCase().trim()
-                     .equals(title.toUpperCase().trim()))
-        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getAppearanceByGenreBySeries(Long idGenre){
-        ArrayList<Appearance> appearances = 
-        (ArrayList<Appearance>) appearanceRepository.findAll();
-        
-        List<Appearance> apperanceRequest = appearances.stream()
-        .filter(a -> a.getGenre() != null)
-        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
-        .filter(a -> a.getGenre().getId() == idGenre)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getAppearanceOrderByASCBySeries(){
-        ArrayList<Appearance> apperances = 
-        appearanceRepository.findAllByOrderByCreationAsc();
-
-        List<Appearance> apperanceRequest = apperances.stream()
-        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getAppearanceOrderByDESCBySeries(){
-        ArrayList<Appearance> apperances = 
-        appearanceRepository.findAllByOrderByCreationDesc();
-        
-        List<Appearance> apperanceRequest = apperances.stream()
-        .filter(a -> a.getType() == EnumTypeAppearance.SERIE)
-        .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            constructorSeriesOrMovies((ArrayList<Appearance>) apperanceRequest)
-            ,HttpStatus.OK);
-    }    
 
 
 

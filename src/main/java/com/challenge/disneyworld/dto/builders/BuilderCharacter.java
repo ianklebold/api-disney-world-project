@@ -1,16 +1,16 @@
-package com.challenge.disneyworld.utils.models.builders;
+package com.challenge.disneyworld.dto.builders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-import com.challenge.disneyworld.entity.Appearance;
+import com.challenge.disneyworld.dto.ModelAppearance;
+import com.challenge.disneyworld.dto.ModelDetailCharacter;
+import com.challenge.disneyworld.dto.ModelImage;
+import com.challenge.disneyworld.dto.ModelListCharacter;
+import com.challenge.disneyworld.dto.builders.interfaces.IBuilder;
+import com.challenge.disneyworld.entity.Film;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
-import com.challenge.disneyworld.utils.models.ModelAppearance;
-import com.challenge.disneyworld.utils.models.ModelDetailCharacter;
-import com.challenge.disneyworld.utils.models.ModelImage;
-import com.challenge.disneyworld.utils.models.ModelListCharacter;
 
 public class BuilderCharacter implements IBuilder{
     private Long id;
@@ -41,13 +41,13 @@ public class BuilderCharacter implements IBuilder{
         return this;
     }
     
-    public BuilderCharacter setAppearances(List<Appearance> list){
+    public BuilderCharacter setAppearances(List<Film> list){
         String url = "http://localhost:8080/disneyworld/api/v1/appearance/"; 
 
         if(list.size() == 0){
             this.appearances = null;
         }else{
-            for (Appearance appearance : list) {
+            for (Film appearance : list) {
                 this.appearances.add(
                     new ModelAppearance(appearance.getTitle(), url+appearance.getId())
                                 );

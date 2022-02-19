@@ -1,6 +1,6 @@
 package com.challenge.disneyworld.controller;
 
-import com.challenge.disneyworld.service.CharacterService;
+import com.challenge.disneyworld.service.CharacterServiceImpl;
 import com.challenge.disneyworld.service.FileUploadService;
 
 import java.net.URISyntaxException;
@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/characters")
 public class CharacterController {
     @Autowired
-    CharacterService characterService;
+    CharacterServiceImpl characterService;
 
     @Autowired
     FileUploadService fileUploadService;

@@ -1,18 +1,18 @@
-package com.challenge.disneyworld.utils.models.builders;
+package com.challenge.disneyworld.dto.builders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.challenge.disneyworld.dto.ModelCharacter;
+import com.challenge.disneyworld.dto.ModelDetailAppearance;
+import com.challenge.disneyworld.dto.ModelImage;
+import com.challenge.disneyworld.dto.ModelListAppearance;
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.Genre;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
 import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
-import com.challenge.disneyworld.utils.models.ModelCharacter;
-import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
-import com.challenge.disneyworld.utils.models.ModelImage;
-import com.challenge.disneyworld.utils.models.ModelListAppearance;
 
 public class BuilderDetailAppearances implements IAppearanceBuilder{
 

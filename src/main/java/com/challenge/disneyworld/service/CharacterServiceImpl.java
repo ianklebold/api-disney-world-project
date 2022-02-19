@@ -1,12 +1,10 @@
 package com.challenge.disneyworld.service;
 
-import com.challenge.disneyworld.repository.AppearanceRepository;
+import com.challenge.disneyworld.repository.FilmRepository;
 import com.challenge.disneyworld.repository.CharacterRepository;
 import com.challenge.disneyworld.repository.ImageRepository;
+import com.challenge.disneyworld.service.interfaces.CharacterService;
 import com.challenge.disneyworld.utils.helpers.Helpers;
-import com.challenge.disneyworld.utils.models.ModelDetailCharacter;
-import com.challenge.disneyworld.utils.models.ModelListCharacter;
-import com.challenge.disneyworld.utils.models.builders.BuilderCharacter;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -16,7 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import com.challenge.disneyworld.entity.Appearance;
+import com.challenge.disneyworld.entity.Film;
+import com.challenge.disneyworld.dto.ModelDetailCharacter;
+import com.challenge.disneyworld.dto.ModelListCharacter;
+import com.challenge.disneyworld.dto.builders.BuilderCharacter;
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.Image;
 import com.challenge.disneyworld.entity.PostImage;
@@ -28,16 +29,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CharacterService {
+public class CharacterServiceImpl implements CharacterService{
     
     CharacterRepository characterRepository;
-    AppearanceRepository appearanceRepository;
+    FilmRepository appearanceRepository;
     ImageRepository imageRepository;
 
     @Autowired
-    public CharacterService(
+    public CharacterServiceImpl(
         CharacterRepository characterRepository, 
-        AppearanceRepository appearanceRepository,
+        FilmRepository appearanceRepository,
         ImageRepository imageRepository){
         this.characterRepository = characterRepository;
         this.appearanceRepository = appearanceRepository;
@@ -287,10 +288,10 @@ public class CharacterService {
     }
 
     private Boolean crearListAppearance(Character character){
-        ArrayList<Appearance> listAppearances = new ArrayList<Appearance>();
-        for (Appearance appearance : character.getAppearances()) {
+        ArrayList<Film> listAppearances = new ArrayList<Film>();
+        for (Film appearance : character.getAppearances()) {
 
-            Optional<Appearance> appearanceRequest = 
+            Optional<Film> appearanceRequest = 
             appearanceRepository.findById(appearance.getId());
 
             if(appearanceRequest.isPresent()){
@@ -311,7 +312,7 @@ public class CharacterService {
 
     private Boolean updateListAppearance(Character character, Character characterRequest){
         if(character.getAppearances().size() == 0){
-            for (Appearance element : characterRequest.getAppearances()) {
+            for (Film element : characterRequest.getAppearances()) {
                 element.getCharacters().remove(characterRequest);
                 appearanceRepository.save(element);
             }
@@ -332,22 +333,22 @@ public class CharacterService {
 
                 for (long element : idAppearances.toArray()){
                     if(!listIdNewAppearances.contains(element)){
-                        Optional<Appearance> appearanceRequest = 
+                        Optional<Film> appearanceRequest = 
                         appearanceRepository.findById(element);
                         appearanceRequest.get().getCharacters().remove(characterRequest);
                         appearanceRepository.save(appearanceRequest.get());
                     }
                 }
             }
-            for (Appearance element : character.getAppearances()) {
-                Optional<Appearance> appearanceRequest = 
+            for (Film element : character.getAppearances()) {
+                Optional<Film> appearanceRequest = 
                 appearanceRepository.findById(element.getId());
                 if(!appearanceRequest.isPresent()){
                     return true; //Error exists
                 }
             }
-            for (Appearance element : character.getAppearances()) {
-                Optional<Appearance> appearanceRequest = 
+            for (Film element : character.getAppearances()) {
+                Optional<Film> appearanceRequest = 
                 appearanceRepository.findById(element.getId());
                 if(!characterRequest.getAppearances().contains(appearanceRequest.get())){
                         appearanceRequest.get().getCharacters().add(characterRequest);
@@ -378,7 +379,7 @@ public class CharacterService {
 
     private void removeFromListAppearances(Character characterRequest){
         
-        for (Appearance element : characterRequest.getAppearances()) {
+        for (Film element : characterRequest.getAppearances()) {
             element.getCharacters().remove(characterRequest);    
         }
     }
@@ -423,7 +424,7 @@ public class CharacterService {
 
     public ResponseEntity<?> getCharactersByAppearance(Long idAppearance){
 
-        Optional<Appearance> appearances = appearanceRepository.findById(idAppearance);
+        Optional<Film> appearances = appearanceRepository.findById(idAppearance);
         if(appearances.isPresent()){
             List<Character> characterRequest = appearances.get().getCharacters();
             return returnCharacters(characterRequest);
@@ -484,5 +485,6 @@ public class CharacterService {
         
         return returnCharacters(listCharacters);
     }
+
 
 }

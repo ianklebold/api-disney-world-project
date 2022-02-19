@@ -26,7 +26,7 @@ import com.challenge.disneyworld.utils.enumerations.EnumTypeAppearance;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-public class Appearance {
+public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -77,7 +77,7 @@ public class Appearance {
 
     /*Constructors*/
 
-    public Appearance(Long id, @NotEmpty String title, @NotEmpty LocalDate creation_date,
+    public Film(Long id, @NotEmpty String title, @NotEmpty LocalDate creation_date,
             @NotEmpty @Min(1) @Max(5) int calification, @NotEmpty String history,
             @NotEmpty EnumTypeAppearance type, Genre genre) {
         this.id = id;
@@ -89,7 +89,7 @@ public class Appearance {
         this.genre = genre;
     }
 
-    public Appearance() {}
+    public Film() {}
 
 
 

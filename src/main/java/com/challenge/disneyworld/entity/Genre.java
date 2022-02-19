@@ -35,13 +35,13 @@ public class Genre {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "genre",cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH})
-    private List<Appearance> appearances = new ArrayList<Appearance>();
+    private List<Film> appearances = new ArrayList<Film>();
    
 
     public Genre() {
     }
 
-    public Genre(@NotEmpty String name, List<Appearance> genre) {
+    public Genre(@NotEmpty String name, List<Film> genre) {
         this.name = name;
         this.appearances = genre;
     }
@@ -89,16 +89,16 @@ public class Genre {
     }
 
     /**
-     * @return List<Appearance> return the appearances
+     * @return List<Film> return the appearances
      */
-    public List<Appearance> getAppearances() {
+    public List<Film> getAppearances() {
         return appearances;
     }
 
     /**
      * @param appearances the appearances to set
      */
-    public void setAppearances(List<Appearance> appearances) {
+    public void setAppearances(List<Film> appearances) {
         this.appearances = appearances;
     }
 

@@ -1,12 +1,10 @@
-package com.challenge.disneyworld.utils.models;
+package com.challenge.disneyworld.dto;
 
-public class ModelAppearance {
+public class ModelCharacter {
     private String name;
     private String url;
-
     
-
-    public ModelAppearance(String name, String url) {
+    public ModelCharacter(String name, String url) {
         this.name = name;
         this.url = url;
     }

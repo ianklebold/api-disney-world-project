@@ -1,4 +1,4 @@
-package com.challenge.disneyworld.utils.models;
+package com.challenge.disneyworld.dto;
 
 import java.time.LocalDate;
 

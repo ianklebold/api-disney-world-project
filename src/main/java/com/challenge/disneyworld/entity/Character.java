@@ -37,7 +37,7 @@ public class Character {
 
     /*Relationship*/
     @ManyToMany(mappedBy = "characters")
-    private List<Appearance> appearances = new ArrayList<Appearance>();
+    private List<Film> appearances = new ArrayList<Film>();
 
     @OneToOne
     @JoinColumn(name="profile_image")
@@ -115,16 +115,16 @@ public class Character {
     /**
      * @return List<Appearance> return the appearances
      */
-    public List<Appearance> getAppearances() {
+    public List<Film> getAppearances() {
         return appearances;
     }
 
     /**
      * @param appearances the appearances to set
      */
-    public void setAppearances(List<Appearance> appearances) {
+    public void setAppearances(List<Film> appearances) {
         this.appearances = appearances;
-        for (Appearance appearance : appearances) {
+        for (Film appearance : appearances) {
             appearance.getCharacters().add(this);
         }
     }

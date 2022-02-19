@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 import javax.transaction.Transactional;
 
-import com.challenge.disneyworld.entity.Appearance;
+import com.challenge.disneyworld.entity.Film;
 import com.challenge.disneyworld.entity.PostImage;
 import com.challenge.disneyworld.entity.ProfileImage;
-import com.challenge.disneyworld.service.AppearanceService;
+import com.challenge.disneyworld.service.FilmServiceImpl;
 import com.challenge.disneyworld.service.FileUploadService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/appearance")
-public class AppearanceController {
+public class FilmController {
 
     @Autowired
-    AppearanceService appearanceService;
+    FilmServiceImpl appearanceService;
 
     @Autowired
     FileUploadService fileUploadService;
@@ -39,7 +39,7 @@ public class AppearanceController {
     public ResponseEntity<?> createAppearance(
         @RequestPart(value="profileImage",required=false) MultipartFile image,
         @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
-        @RequestPart(value="appearance", required=true) Appearance appearance)
+        @RequestPart(value="appearance", required=true) Film appearance)
         throws URISyntaxException{
         
         ArrayList<PostImage> postImages = new ArrayList<PostImage>();
@@ -56,7 +56,7 @@ public class AppearanceController {
         @PathVariable(name = "id") Long id,
         @RequestPart(value="profileImage",required=false) MultipartFile image,
         @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
-        @RequestPart(value="appearance", required=true) Appearance appearance){
+        @RequestPart(value="appearance", required=true) Film appearance){
 
         ArrayList<PostImage> postImages = new ArrayList<PostImage>();
         postImages = fileUploadService.uploadImagePostToDB(postImage);

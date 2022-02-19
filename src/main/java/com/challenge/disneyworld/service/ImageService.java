@@ -17,8 +17,6 @@ public class ImageService {
     ImageRepository imageRepository;
 
     public ResponseEntity<Resource> generateImage(Image image){
-        
-
         return ResponseEntity.ok()
                .contentType(MediaType.parseMediaType(image.getFileType()))
                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename = " + image.getName())

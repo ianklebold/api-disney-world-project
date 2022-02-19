@@ -1,11 +1,11 @@
-package com.challenge.disneyworld.utils.models.builders;
+package com.challenge.disneyworld.dto.builders;
 
 import java.time.LocalDate;
 
+import com.challenge.disneyworld.dto.ModelDetailAppearance;
+import com.challenge.disneyworld.dto.ModelImage;
+import com.challenge.disneyworld.dto.ModelListAppearance;
 import com.challenge.disneyworld.entity.ProfileImage;
-import com.challenge.disneyworld.utils.models.ModelDetailAppearance;
-import com.challenge.disneyworld.utils.models.ModelImage;
-import com.challenge.disneyworld.utils.models.ModelListAppearance;
 
 public class BuilderAppearance implements IAppearanceBuilder{
     

@@ -1,13 +1,14 @@
-package com.challenge.disneyworld.utils.models.builders;
+package com.challenge.disneyworld.dto.builders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.challenge.disneyworld.entity.Appearance;
+import com.challenge.disneyworld.dto.ModelAppearance;
+import com.challenge.disneyworld.dto.ModelDetailGenre;
+import com.challenge.disneyworld.dto.ModelImage;
+import com.challenge.disneyworld.dto.builders.interfaces.IGenreBuilder;
+import com.challenge.disneyworld.entity.Film;
 import com.challenge.disneyworld.entity.ProfileImage;
-import com.challenge.disneyworld.utils.models.ModelAppearance;
-import com.challenge.disneyworld.utils.models.ModelDetailGenre;
-import com.challenge.disneyworld.utils.models.ModelImage;
 
 public class BuilderGenre implements IGenreBuilder{
     private String nameGenre;
@@ -27,12 +28,12 @@ public class BuilderGenre implements IGenreBuilder{
         return this;
     }
 
-    public BuilderGenre setAppearances(List<Appearance> newAppearances){
+    public BuilderGenre setAppearances(List<Film> newAppearances){
         String url = "http://localhost:8080/disneyworld/api/v1/appearance/";
         if(newAppearances.size() == 0){
             this.appearances = null;
         }else{
-            for (Appearance appearance : newAppearances) {
+            for (Film appearance : newAppearances) {
                 this.appearances.add(
                     new ModelAppearance(appearance.getTitle(), url+appearance.getId())
                 );
