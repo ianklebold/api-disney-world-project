@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.challenge.disneyworld.dto.ModelDetailAppearance;
 import com.challenge.disneyworld.dto.ModelImage;
 import com.challenge.disneyworld.dto.ModelListAppearance;
+import com.challenge.disneyworld.dto.builders.interfaces.IAppearanceBuilder;
 import com.challenge.disneyworld.entity.ProfileImage;
 
 public class BuilderAppearance implements IAppearanceBuilder{

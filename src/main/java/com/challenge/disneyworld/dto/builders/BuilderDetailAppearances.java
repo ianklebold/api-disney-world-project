@@ -8,6 +8,7 @@ import com.challenge.disneyworld.dto.ModelCharacter;
 import com.challenge.disneyworld.dto.ModelDetailAppearance;
 import com.challenge.disneyworld.dto.ModelImage;
 import com.challenge.disneyworld.dto.ModelListAppearance;
+import com.challenge.disneyworld.dto.builders.interfaces.IAppearanceBuilder;
 import com.challenge.disneyworld.entity.Character;
 import com.challenge.disneyworld.entity.Genre;
 import com.challenge.disneyworld.entity.PostImage;
