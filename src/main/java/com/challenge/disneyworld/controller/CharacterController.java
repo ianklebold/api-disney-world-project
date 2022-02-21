@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/characters")
+@RequestMapping("/characters")
 public class CharacterController {
     @Autowired
     CharacterServiceImpl characterService;
