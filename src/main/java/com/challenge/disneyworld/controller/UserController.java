@@ -14,18 +14,17 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/auth")
 public class UserController {
     private final UserService userService;
     private final MailService mailService;
 
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody ModelRegistrationUser user){
         ResponseEntity<?> response = userService.createUser(user);
         if(response.getStatusCodeValue() == 200){
             //Enviamos email de bienvenida
-            System.out.println("Enttramosa enviar el email :D");
             try {
                 mailService.send(user);    
             } catch (Exception e) {

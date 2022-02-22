@@ -17,7 +17,6 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 
@@ -30,30 +29,29 @@ public class MailService {
 	private static final Logger logger = LoggerFactory.getLogger(MailService.class);
 	
 	public String send(ModelRegistrationUser user) throws IOException {
-		// the sender email should be the same as we used to Create a Single Sender Verification
+		// El from es el que envia el correo. Debe ser el mismo con el que nos registramos en sendgrid
 		Email from = new Email("ianklebold@gmail.com");
 		Email to = new Email(user.getEmail());
 		Mail mail = new Mail();
-        // we create an object of our static class feel free to change the class on it's own file 
-        // I try to keep every think simple
+
+		//Configuracion del template
 		DynamicTemplatePersonalization personalization = new DynamicTemplatePersonalization();
 		personalization.addTo(to);
 		mail.setFrom(from);
 		mail.setSubject("Disney World");
-        // This is the first_name variable that we created on the template
+        // Aca enviamos las variables que configuramos en el template
 		personalization.addDynamicTemplateData("username", user.getUsername());
         mail.addPersonalization(personalization);
+		//Indicamos el Id del template
 		mail.setTemplateId("d-dfcbd8322cbb4db5b38dd9f0ae967f0f");
-		// this is the api key
 		
 		Request request = new Request();
-
 		try {
 			request.setMethod(Method.POST);
 			request.setEndpoint("mail/send");
 			request.setBody(mail.build());
 			Response response = sendGrid.api(request);
-			 logger.info(response.getBody());
+			logger.info(response.getBody());
 			return response.getBody();
 		} catch (IOException ex) {
 			throw ex;
