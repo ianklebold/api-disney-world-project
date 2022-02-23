@@ -6,11 +6,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.challenge.disneyworld.dto.Tokens;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Date;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,6 +28,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+    
     private final AuthenticationManager authenticationManager;
     
     /**
@@ -64,8 +68,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                     .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                     .sign(algorithm);
                 
-                response.setHeader("access_token", accessToken);
-                response.setHeader("refresh_token", refreshToken);
+                //Seteamos en un objeto los dos tokens.
+                Tokens tokens = new Tokens();
+                tokens.setAccessToken(accessToken);
+                tokens.setRefreshToken(refreshToken);
+                //Indicamos que el tipo de la respuesta será JSON
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                //Object mapper escribe en response el objeto con formato json.
+                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     
                 }
 
