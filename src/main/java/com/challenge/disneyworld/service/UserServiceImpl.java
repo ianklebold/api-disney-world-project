@@ -1,19 +1,36 @@
 package com.challenge.disneyworld.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import com.challenge.disneyworld.dto.ModelRegistrationUser;
+import com.challenge.disneyworld.dto.Tokens;
 import com.challenge.disneyworld.entity.Role;
 import com.challenge.disneyworld.entity.User;
 import com.challenge.disneyworld.repository.RoleRepository;
 import com.challenge.disneyworld.repository.UserRepository;
 import com.challenge.disneyworld.service.interfaces.UserService;
+import com.fasterxml.jackson.core.exc.StreamWriteException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -183,6 +200,48 @@ public class UserServiceImpl implements UserService,UserDetailsService{
             return responseUserNotExists;
         }
         
+    }
+
+    @Override
+    public void refreshToken(HttpServletRequest request,HttpServletResponse response) throws StreamWriteException, DatabindException, IOException {
+        String authorizationHeader = request.getHeader("AUTHORIZATION");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                String refreshToken = authorizationHeader.substring("Bearer ".length());
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = jwtVerifier.verify(refreshToken);
+                String username = decodedJWT.getSubject();
+                Optional<User> user = userRepository.findByUsername(username);
+                String accessToken = JWT.create()
+                        .withSubject(user.get().getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) //Diez minutos de vida
+                        .withIssuer(request.getRequestURL().toString())
+                        .withClaim("roles", user.get().getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                        .sign(algorithm);
+                Tokens tokens = new Tokens();
+                tokens.setAccessToken(accessToken);
+                tokens.setRefreshToken(refreshToken);
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+            } catch (Exception e) {
+                response.setHeader("error", e.getMessage());
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                Map<String, String> error = new HashMap<>();
+                error.put("error_message", e.getMessage());
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
+            }
+        } else {
+            throw new RuntimeException("Refresh token is missing");
+        }
+        
+    }
+
+    @Override
+    public ResponseEntity<?> getUser() {
+        return new ResponseEntity<>(userRepository.findAll(),
+        HttpStatus.OK);
     }
 
     

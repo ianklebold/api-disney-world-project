@@ -1,6 +1,7 @@
 package com.challenge.disneyworld.security;
 
 import com.challenge.disneyworld.security.filter.CustomAuthenticationFilter;
+import com.challenge.disneyworld.security.filter.CustomAuthorizationFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.DELETE;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,12 +37,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.csrf().disable();
-        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/auth/login"); //EndPoint donde se da la autenticacion
         //STATELESS (Principio de REST) quiere decir que ante una peticion a la proxima no recuerdo que lo hayas hecho. 
-        httpSecurity.authorizeRequests().anyRequest().permitAll(); //Permitir todas las peticiones
-        //Añadimos filtros de autenticacion.
-        httpSecurity.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        httpSecurity.csrf().disable()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .authorizeRequests()
+                        .antMatchers("/auth/register").permitAll()
+                        .antMatchers("/auth/login").permitAll()
+                        .antMatchers("/auth/token/refresh").permitAll()
+                        .antMatchers(GET,"/users").hasAnyAuthority("ROLE_ADMIN")
+                        .antMatchers(DELETE,"/users").hasAnyAuthority("ROLE_ADMIN")
+                        .antMatchers(DELETE,"/users").hasAnyAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated() //No hace falta ROL. Con Token valido puede hacer lo quiera
+                        .and()
+                        .addFilter(customAuthenticationFilter)  //Filtro de autenticacion
+                        .addFilterBefore(new CustomAuthorizationFilter(), 
+                                        UsernamePasswordAuthenticationFilter.class);
+                        //Filtro de autorizacion. Aqui validamos que el token sea correcto
     }
 
     @Bean
