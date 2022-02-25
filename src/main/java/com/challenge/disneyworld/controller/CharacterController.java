@@ -38,12 +38,7 @@ public class CharacterController {
         @RequestPart(value="profileImage",required=false) MultipartFile image,
         @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
         @RequestPart(value="character", required=true) Character character)
-        throws URISyntaxException{
-        
-        ResponseEntity<?> controlCharacter = characterService.controlCharacter(character);
-        
-        if(controlCharacter != null) return controlCharacter;
-        
+        throws URISyntaxException{ 
         ArrayList<PostImage> postImages = new ArrayList<PostImage>();
         postImages = fileUploadService.uploadImagePostToDB(postImage);
         ProfileImage profileImage = new ProfileImage();
@@ -62,19 +57,16 @@ public class CharacterController {
         @RequestPart(value="profileImage",required=false) MultipartFile image,
         @RequestPart(value="postImages",required=false)  ArrayList<MultipartFile> postImage,
         @RequestPart(value="character", required=true) Character character){
-    
-        ResponseEntity<?> controlCharacter = 
-        characterService.updateControlCharacter(character,id);
-        if(controlCharacter != null) return controlCharacter;
+
         try {
             ArrayList<PostImage> postImages = new ArrayList<PostImage>();
             postImages = fileUploadService.uploadImagePostToDB(postImage);
             ProfileImage profileImage = new ProfileImage();
             profileImage = fileUploadService.uploadImageProfileToDB(image);
             ResponseEntity<?> response = 
-            characterService.updateCharacter(postImages,profileImage,character);
-
+            characterService.updateCharacter(id,postImages,profileImage,character);
             return new ResponseEntity<>(response.getBody(),response.getStatusCode());
+            
         } catch (Exception e) {
             return new ResponseEntity<>("Ups Something was wrong.",
             HttpStatus.CONFLICT);

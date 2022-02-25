@@ -17,6 +17,7 @@ public class BuilderCharacter implements IBuilder{
     private int age;
     private String name;
     private String history;
+    private Double weight;
     private List<ModelAppearance> appearances = new ArrayList<ModelAppearance>();
     private ModelImage imageProfile;
     private List<ModelImage> imagesPosts = new ArrayList<ModelImage>();
@@ -38,6 +39,11 @@ public class BuilderCharacter implements IBuilder{
 
     public BuilderCharacter setHistory(String history){
         this.history = history;
+        return this;
+    }
+
+    public BuilderCharacter setWeight(Double weight){
+        this.weight = weight;
         return this;
     }
     
@@ -86,6 +92,7 @@ public class BuilderCharacter implements IBuilder{
         character.setAppearances(this.appearances);
         character.setImageProfile(this.imageProfile);
         character.setImagesPosts(this.imagesPosts);
+        character.setWeight(this.weight);
 
         return character;
     }

@@ -8,6 +8,7 @@ public class ModelDetailCharacter {
     private int age;
     private String name;
     private String history;
+    private Double weight;
     private List<ModelAppearance> appearances = new ArrayList<ModelAppearance>();
     private ModelImage imageProfile;
     private List<ModelImage> imagesPosts = new ArrayList<ModelImage>();
@@ -110,6 +111,21 @@ public class ModelDetailCharacter {
      */
     public void setImagesPosts(List<ModelImage> imagesPosts) {
         this.imagesPosts = imagesPosts;
+    }
+
+
+    /**
+     * @return Double return the weight
+     */
+    public Double getWeight() {
+        return weight;
+    }
+
+    /**
+     * @param weight the weight to set
+     */
+    public void setWeight(Double weight) {
+        this.weight = weight;
     }
 
 }

@@ -16,6 +16,7 @@ public interface CharacterService {
     Character character);
 
     public ResponseEntity<?>  updateCharacter(
+    Long id,
     ArrayList<PostImage> postImage,
     ProfileImage imageCharacter,
     Character character);

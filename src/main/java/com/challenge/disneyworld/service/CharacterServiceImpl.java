@@ -73,9 +73,27 @@ public class CharacterServiceImpl implements CharacterService{
                                              Character character){
         character.setProfileimage(imageCharacter);
         character.setPostImage(postImage);
-        characterRepository.save(character);
-        return new ResponseEntity<>("Succesfully created",
-        HttpStatus.OK);
+        ResponseEntity<?> response = controlCharacter(character);
+        if(response == null){
+            characterRepository.save(character);
+            return new ResponseEntity<>("Succesfully created",
+            HttpStatus.OK);
+        }else{
+            deleteImagesByError(postImage,imageCharacter);
+            return response;
+        }
+        
+    }
+
+    private void deleteImagesByError(ArrayList<PostImage> postImage,
+    ProfileImage imageCharacter){
+
+        if(imageCharacter != null) imageRepository.delete(imageCharacter);
+        if(postImage.size() > 0){
+            for (PostImage image : postImage) {
+                imageRepository.delete(image);
+            }
+        }
     }
 
     public ResponseEntity<?> controlCharacter(Character character){
@@ -148,10 +166,16 @@ public class CharacterServiceImpl implements CharacterService{
 
     @Transactional
     public ResponseEntity<?>  updateCharacter(
+        Long id,
         ArrayList<PostImage> postImage,
         ProfileImage imageCharacter,
         Character character){
-
+        ResponseEntity<?> response = updateControlCharacter(character,id);  
+          
+        if(response != null){
+            deleteImagesByError(postImage, imageCharacter);
+            return response;
+        }
         Character requestCharacter = 
         characterRepository.findById(character.getId()).get();
 
@@ -474,6 +498,7 @@ public class CharacterServiceImpl implements CharacterService{
                         .setAppearances(character.get().getAppearances())
                         .setProfileImage(character.get().getProfileimage())
                         .setPostImage(character.get().getPostImage())
+                        .setWeight(character.get().getWeight())
                         .builder();
             
             return new ResponseEntity<>(characterRequest, HttpStatus.OK);

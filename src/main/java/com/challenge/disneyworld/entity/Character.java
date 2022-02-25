@@ -31,6 +31,9 @@ public class Character {
     @Column(name = "name", nullable = false, updatable = true, unique = true)
     private String name;
 
+    @Column(name = "weight", nullable = true, updatable = true)
+    private Double weight;
+
     @NotEmpty
     @Column(name = "history", nullable = false, updatable= true)
     private String history;
@@ -161,6 +164,21 @@ public class Character {
         for (PostImage element : postImage) {
             this.getPostImage().add(element);
         }
+    }
+
+
+    /**
+     * @return Double return the weight
+     */
+    public Double getWeight() {
+        return weight;
+    }
+
+    /**
+     * @param weight the weight to set
+     */
+    public void setWeight(Double weight) {
+        this.weight = weight;
     }
 
 }
